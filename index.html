@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FungiScan | Análisis Neuronal</title>
+    <title>FungiScan | Perfil de Usuario</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0d1f0f; color: #e2f5e6; }
@@ -14,167 +14,236 @@
         }
         .glow-text { text-shadow: 0 0 20px rgba(74, 222, 128, 0.6); }
         .hidden-el { display: none !important; }
-        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .view-active { display: block !important; }
+        
+        /* Estilos para inputs */
+        input[type="text"], input[type="email"] {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            color: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            width: 100%;
+        }
+        input:focus { outline: none; border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans antialiased selection:bg-green-500 selection:text-white">
 
     <nav class="fixed top-0 w-full glass-panel z-50 px-8 py-5 flex justify-between items-center shadow-lg">
         <div class="flex items-center gap-4">
-            <span class="text-4xl md:text-5xl">🍄</span>
-            <h1 class="text-3xl md:text-4xl font-bold tracking-wider text-green-400 glow-text">FungiScan</h1>
-            <span class="ml-3 px-3 py-1 bg-green-900/50 text-green-300 text-sm font-bold rounded-full border border-green-700/50">PRO</span>
+            <span class="text-4xl md:text-5xl cursor-pointer" onclick="switchView('lab')">🍄</span>
+            <h1 class="text-3xl md:text-4xl font-bold tracking-wider text-green-400 glow-text cursor-pointer" onclick="switchView('lab')">FungiScan</h1>
+            <span id="nav-badge" class="ml-3 px-3 py-1 bg-green-900/50 text-green-300 text-sm font-bold rounded-full border border-green-700/50">FREE</span>
         </div>
-        <div class="flex items-center gap-3 bg-black/30 px-5 py-2.5 rounded-full border border-white/5">
-            <div id="api-dot" class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
-            <span id="api-status-text" class="text-sm md:text-base uppercase tracking-widest text-gray-400 font-bold">Buscando Servidor...</span>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-xl font-bold">
+                <button onclick="switchView('lab')" class="hover:text-green-400 transition-colors">Laboratorio</button>
+                <button onclick="switchView('account')" class="hover:text-green-400 transition-colors">Mi Cuenta</button>
+            </div>
+            <div class="flex items-center gap-3 bg-black/30 px-5 py-2.5 rounded-full border border-white/5">
+                <div id="api-dot" class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                <span id="api-status-text" class="text-sm md:text-base uppercase tracking-widest text-gray-400 font-bold uppercase">Offline</span>
+            </div>
         </div>
     </nav>
 
-    <main class="flex-grow w-full max-w-[90rem] mx-auto px-6 pt-36 pb-16">
-        
+    <main id="view-lab" class="view-active hidden-el flex-grow w-full max-w-[90rem] mx-auto px-6 pt-36 pb-16">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-            
             <div class="lg:col-span-6 space-y-10">
-                <h2 class="text-7xl md:text-[6.5rem] font-extrabold leading-[1.1]">
-                    ¿Es seguro <br>
-                    <span class="text-green-400 italic font-serif glow-text">este hongo?</span>
-                </h2>
-                <p class="text-2xl md:text-3xl text-green-100/80 leading-relaxed font-light">
-                    Sube una fotografía clara y nuestro modelo de visión artificial analizará su fisonomía para determinar si es seguro o venenoso.
-                </p>
-                
+                <h2 class="text-7xl md:text-[6.5rem] font-extrabold leading-[1.1]">¿Es seguro <br><span class="text-green-400 italic font-serif glow-text">este hongo?</span></h2>
+                <p class="text-2xl md:text-3xl text-green-100/80 leading-relaxed font-light">Sube una fotografía clara y nuestro modelo de visión artificial analizará su fisonomía para determinar si es seguro o venenoso.</p>
                 <div class="p-8 bg-red-950/30 border border-red-500/30 rounded-[2rem] flex gap-6 items-start">
-                    <span class="text-6xl md:text-7xl drop-shadow-lg">⚠️</span>
+                    <span class="text-6xl">⚠️</span>
                     <div>
                         <h4 class="text-red-400 font-bold mb-3 uppercase tracking-widest text-xl">Advertencia Importante</h4>
-                        <p class="text-base md:text-lg text-red-200/90 leading-relaxed">
-                            Esta herramienta tiene fines netamente educativos e ilustrativos. 
-                            <strong>NUNCA manipules ni consumas</strong> un espécimen silvestre basándote únicamente en el resultado de esta aplicación. La identificación errónea puede ser letal.
-                        </p>
+                        <p class="text-base md:text-lg text-red-200/90 leading-relaxed">Esta herramienta tiene fines educativos. <strong>NUNCA consumas</strong> un espécimen basado solo en el resultado. La identificación errónea puede ser letal.</p>
                     </div>
                 </div>
             </div>
-
             <div class="lg:col-span-6 w-full">
                 <div class="glass-panel p-6 rounded-[3rem] shadow-2xl relative overflow-hidden min-h-[650px] flex flex-col bg-black/20">
-                    
-                    <div id="upload-zone" class="flex-grow border-4 border-dashed border-green-500/20 rounded-[2.5rem] flex flex-col items-center justify-center cursor-pointer hover:border-green-400 hover:bg-green-400/5 transition-all group m-2 p-8 text-center">
-                        <div class="w-32 h-32 bg-green-500/10 rounded-full flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                            <span class="text-7xl">📸</span>
-                        </div>
+                    <div id="upload-zone" class="flex-grow border-4 border-dashed border-green-500/20 rounded-[2.5rem] flex flex-col items-center justify-center cursor-pointer hover:border-green-400 m-2 p-8 text-center transition-all">
+                        <div class="w-32 h-32 bg-green-500/10 rounded-full flex items-center justify-center mb-8"><span class="text-7xl">📸</span></div>
                         <p class="text-3xl md:text-4xl font-bold text-green-100 mb-4">Haz clic o arrastra una foto</p>
-                        <p class="text-lg md:text-xl text-green-100/50 uppercase tracking-widest font-semibold">Formatos admitidos: JPG, PNG</p>
                         <input type="file" id="file-input" class="hidden" accept="image/*">
                     </div>
-
                     <div id="preview-zone" class="hidden-el flex-grow flex flex-col p-2 h-full">
                         <div class="relative w-full flex-grow mb-6 rounded-[2rem] overflow-hidden border-2 border-green-500/30 bg-black/40">
-                            <img id="image-preview" src="" alt="Preview" class="w-full h-full object-contain">
-                            <button id="btn-cancel" class="absolute top-6 right-6 w-14 h-14 bg-red-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform font-bold text-2xl shadow-xl">✕</button>
+                            <img id="image-preview" src="" class="w-full h-full object-contain">
+                            <button id="btn-cancel" class="absolute top-6 right-6 w-14 h-14 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-2xl">✕</button>
                         </div>
-                        <button id="btn-analyze" class="w-full py-6 md:py-8 bg-green-500 hover:bg-green-400 text-gray-900 font-black text-2xl md:text-3xl rounded-3xl transition-all shadow-[0_0_40px_rgba(74,222,128,0.3)]">
-                            INICIAR ANÁLISIS MOLECULAR
+                        <button id="btn-analyze" class="w-full py-8 bg-green-500 hover:bg-green-400 text-gray-900 font-black text-3xl rounded-3xl transition-all shadow-[0_0_40px_rgba(74,222,128,0.3)]">INICIAR ANÁLISIS</button>
+                    </div>
+                    <div id="loading-zone" class="hidden-el absolute inset-0 glass-panel flex flex-col items-center justify-center z-10 bg-black/80"><span class="text-8xl animate-bounce mb-10">🍄</span><p class="text-green-400 font-mono text-2xl tracking-widest uppercase animate-pulse">Analizando...</p></div>
+                    <div id="result-zone" class="hidden-el absolute inset-0 z-20 flex flex-col items-center justify-center p-12 text-center bg-black/90">
+                        <div id="result-icon" class="text-9xl mb-6"></div>
+                        <h3 id="result-title" class="text-7xl font-black mb-2"></h3>
+                        <p id="result-name" class="text-4xl italic font-serif text-white/90 mb-8"></p>
+                        <div class="w-full bg-white/10 rounded-full h-4 mb-3 border border-white/10 overflow-hidden"><div id="result-bar" class="h-full rounded-full transition-all duration-1000 w-0 bg-green-500"></div></div>
+                        <p id="result-conf" class="text-lg text-white/50 mb-10 font-bold w-full text-right">Confianza: 0%</p>
+                        <p id="result-warn" class="text-xl bg-black/50 p-6 rounded-3xl border border-white/10 mb-10 font-medium"></p>
+                        <button id="btn-reset" class="px-10 py-4 border-2 border-white/20 rounded-full hover:bg-white/10 text-lg font-bold">Analizar otra muestra</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main id="view-account" class="hidden-el flex-grow w-full max-w-[90rem] mx-auto px-6 pt-36 pb-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <div class="lg:col-span-5 space-y-8">
+                <div class="glass-panel p-10 rounded-[3rem]">
+                    <h2 class="text-4xl font-bold mb-8 flex items-center gap-4">👤 Mi Perfil <button onclick="toggleUserType()" class="text-[10px] bg-white/10 px-2 py-1 rounded">Switch Pro/Free</button></h2>
+                    <div class="flex flex-col items-center mb-10">
+                        <div class="relative group">
+                            <img id="user-photo" src="https://ui-avatars.com/api/?name=User&background=4ade80&color=0d1f0f&size=256" class="w-48 h-48 rounded-full border-4 border-green-400 shadow-2xl object-cover">
+                            <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                                <span class="text-sm font-bold">Cambiar Foto</span>
+                            </div>
+                        </div>
+                        <h3 id="display-name" class="text-3xl font-bold mt-6 text-green-400">Nombre de Usuario</h3>
+                        <p id="display-status" class="text-green-100/50 font-mono tracking-tighter">CUENTA FREE</p>
+                    </div>
+                    <form class="space-y-6" onsubmit="event.preventDefault(); saveProfile();">
+                        <div><label class="text-sm font-bold text-green-400 mb-2 block">Nombre Completo</label><input type="text" id="input-name" placeholder="Tu nombre"></div>
+                        <div><label class="text-sm font-bold text-green-400 mb-2 block">Correo Electrónico</label><input type="email" id="input-email" placeholder="correo@ejemplo.com"></div>
+                        <button class="w-full py-4 bg-green-500 text-gray-900 font-bold rounded-2xl hover:bg-green-400 transition-colors">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7">
+                <div class="glass-panel p-10 rounded-[3rem] h-full min-h-[600px] flex flex-col">
+                    
+                    <div id="pro-content" class="hidden-el space-y-6 flex-grow">
+                        <h2 class="text-4xl font-bold mb-8 flex items-center justify-between">
+                            Historico de Hallazgos
+                            <span class="text-xs bg-green-400 text-black px-3 py-1 rounded-full font-black">PRO ACTIVE</span>
+                        </h2>
+                        <div id="history-list" class="space-y-4 max-h-[500px] overflow-y-auto pr-4">
+                            </div>
+                    </div>
+
+                    <div id="free-content" class="flex-grow flex flex-col items-center justify-center text-center space-y-8 p-6">
+                        <span class="text-9xl">💎</span>
+                        <h2 class="text-5xl font-black leading-tight">Desbloquea el <br><span class="text-green-400">Potencial Completo</span></h2>
+                        <p class="text-2xl text-green-100/60 max-w-md">Parece que estás usando la versión gratuita. Pásate a Pro para guardar tus hallazgos y acceder a análisis moleculares ilimitados.</p>
+                        <button class="px-12 py-6 bg-gradient-to-r from-green-600 to-green-400 text-black font-black text-2xl rounded-[2rem] shadow-[0_0_50px_rgba(74,222,128,0.3)] hover:scale-105 transition-transform">
+                            ADQUIRIR VERSIÓN PRO
                         </button>
                     </div>
 
-                    <div id="loading-zone" class="hidden-el absolute inset-0 glass-panel flex flex-col items-center justify-center z-10 bg-black/80 px-4 text-center">
-                        <span class="text-8xl animate-bounce mb-10 drop-shadow-2xl">🍄</span>
-                        <p class="text-green-400 font-mono text-xl md:text-2xl tracking-widest uppercase animate-pulse font-bold">Procesando redes neuronales...</p>
-                    </div>
-
-                    <div id="result-zone" class="hidden-el absolute inset-0 z-20 flex flex-col items-center justify-center p-12 text-center transition-all">
-                        <div id="result-bg" class="absolute inset-0 opacity-10"></div>
-                        <div class="relative z-30 flex flex-col items-center w-full max-w-lg">
-                            <div id="result-icon" class="text-8xl md:text-9xl mb-6 drop-shadow-2xl"></div>
-                            <h3 id="result-title" class="text-6xl md:text-7xl font-black mb-2"></h3>
-                            <p id="result-name" class="text-3xl md:text-4xl italic font-serif text-white/90 mb-8"></p>
-                            
-                            <div class="w-full bg-white/10 rounded-full h-4 mb-3 overflow-hidden border border-white/10">
-                                <div id="result-bar" class="h-full rounded-full transition-all duration-1000 w-0 relative">
-                                    <div class="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]"></div>
-                                </div>
-                            </div>
-                            <p id="result-conf" class="text-sm md:text-base text-white/50 mb-10 uppercase tracking-widest font-bold w-full text-right">Confianza: 0%</p>
-                            
-                            <p id="result-warn" class="text-lg md:text-xl bg-black/50 p-6 rounded-3xl border border-white/10 mb-10 leading-relaxed font-medium shadow-lg"></p>
-                            
-                            <button id="btn-reset" class="px-10 py-4 border-2 border-white/20 rounded-full hover:bg-white/10 transition-colors text-base md:text-lg font-bold uppercase tracking-widest">
-                                Analizar otra muestra
-                            </button>
-                        </div>
-                    </div>
-
                 </div>
             </div>
-
         </div>
     </main>
 
     <script>
-        // LA URL DE TU NGROK EN COLAB
+        // CONFIGURACIÓN INICIAL
         const NGROK_URL = "https://blitz-casing-catalog.ngrok-free.dev"; 
+        let userProfile = { name: "Usuario UIS", email: "estudiante@uis.edu.co", isPro: false };
+        let analysisHistory = JSON.parse(localStorage.getItem('fungiHistory')) || [];
 
-        const elUploadZone = document.getElementById('upload-zone');
-        const elFileInput = document.getElementById('file-input');
-        const elPreviewZone = document.getElementById('preview-zone');
-        const elImagePreview = document.getElementById('image-preview');
-        const elBtnCancel = document.getElementById('btn-cancel');
-        const elBtnAnalyze = document.getElementById('btn-analyze');
-        const elLoadingZone = document.getElementById('loading-zone');
-        const elResultZone = document.getElementById('result-zone');
-        
-        let currentFile = null;
+        // NAVEGACIÓN SPA
+        function switchView(view) {
+            document.getElementById('view-lab').classList.remove('view-active');
+            document.getElementById('view-account').classList.remove('view-active');
+            document.getElementById('view-' + view).classList.add('view-active');
+            window.scrollTo(0,0);
+        }
 
-        async function checkApiStatus() {
-            const dot = document.getElementById('api-dot');
-            const txt = document.getElementById('api-status-text');
-            try {
-                const res = await fetch(`${NGROK_URL}/`, {
-                    method: 'GET',
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
-                if (res.ok) {
-                    dot.className = 'w-3 h-3 rounded-full bg-green-500 shadow-[0_0_12px_#22c55e]';
-                    txt.textContent = 'Servidor Online';
-                }
-            } catch (e) {
-                dot.className = 'w-3 h-3 rounded-full bg-red-500 shadow-[0_0_12px_#ef4444]';
-                txt.textContent = 'Servidor Offline';
+        // GESTIÓN DE PERFIL
+        function toggleUserType() {
+            userProfile.isPro = !userProfile.isPro;
+            updateAccountUI();
+        }
+
+        function saveProfile() {
+            userProfile.name = document.getElementById('input-name').value || userProfile.name;
+            userProfile.email = document.getElementById('input-email').value || userProfile.email;
+            updateAccountUI();
+            alert("Perfil actualizado correctamente");
+        }
+
+        function updateAccountUI() {
+            const badge = document.getElementById('nav-badge');
+            const displayStatus = document.getElementById('display-status');
+            const displayName = document.getElementById('display-name');
+            const proContent = document.getElementById('pro-content');
+            const freeContent = document.getElementById('free-content');
+
+            displayName.textContent = userProfile.name;
+            document.getElementById('input-name').value = userProfile.name;
+            document.getElementById('input-email').value = userProfile.email;
+
+            if (userProfile.isPro) {
+                badge.textContent = "PRO";
+                badge.className = "ml-3 px-3 py-1 bg-green-500 text-black text-sm font-bold rounded-full";
+                displayStatus.textContent = "MEMBRESÍA PRO ACTIVA";
+                displayStatus.className = "text-green-400 font-mono tracking-widest font-bold mt-2";
+                proContent.classList.remove('hidden-el');
+                freeContent.classList.add('hidden-el');
+                renderHistory();
+            } else {
+                badge.textContent = "FREE";
+                badge.className = "ml-3 px-3 py-1 bg-green-900/50 text-green-300 text-sm font-bold rounded-full border border-green-700/50";
+                displayStatus.textContent = "CUENTA GRATUITA";
+                displayStatus.className = "text-green-100/50 font-mono tracking-tighter mt-2";
+                proContent.classList.add('hidden-el');
+                freeContent.classList.remove('hidden-el');
             }
         }
-        setInterval(checkApiStatus, 10000);
-        checkApiStatus();
 
-        elUploadZone.addEventListener('click', () => elFileInput.click());
-        elUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); elUploadZone.classList.add('border-green-400'); });
-        elUploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-        });
-        elFileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
-
-        function handleFile(file) {
-            currentFile = file;
-            elImagePreview.src = URL.createObjectURL(file);
-            elUploadZone.classList.add('hidden-el');
-            elPreviewZone.classList.remove('hidden-el');
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = analysisHistory.length ? '' : '<p class="text-white/30 italic">No hay análisis previos...</p>';
+            analysisHistory.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-black/40 p-5 rounded-2xl border border-white/5 flex items-center gap-6";
+                card.innerHTML = `
+                    <span class="text-4xl">${item.icon}</span>
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-xl">${item.name}</h4>
+                        <p class="text-xs text-white/40 uppercase tracking-widest">${item.date}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-3 py-1 rounded-lg text-xs font-bold ${item.type === 'VENENOSO' ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}">${item.type}</span>
+                        <p class="text-[10px] text-white/30 mt-1">${Math.round(item.conf * 100)}% Confianza</p>
+                    </div>
+                `;
+                list.prepend(card);
+            });
         }
 
-        elBtnCancel.addEventListener('click', resetApp);
+        // LÓGICA DE ANÁLISIS (MODIFICADA PARA GUARDAR EN HISTORIAL)
+        const elFileInput = document.getElementById('file-input');
+        const elBtnAnalyze = document.getElementById('btn-analyze');
+        let currentFile = null;
+
+        document.getElementById('upload-zone').addEventListener('click', () => elFileInput.click());
+        elFileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                currentFile = e.target.files[0];
+                document.getElementById('image-preview').src = URL.createObjectURL(currentFile);
+                document.getElementById('upload-zone').classList.add('hidden-el');
+                document.getElementById('preview-zone').classList.remove('hidden-el');
+            }
+        });
+
+        document.getElementById('btn-cancel').addEventListener('click', resetApp);
         document.getElementById('btn-reset').addEventListener('click', resetApp);
 
         function resetApp() {
             currentFile = null;
-            elPreviewZone.classList.add('hidden-el');
-            elResultZone.classList.add('hidden-el');
-            elLoadingZone.classList.add('hidden-el');
-            elUploadZone.classList.remove('hidden-el');
-            document.getElementById('result-bar').style.width = '0%';
+            document.getElementById('preview-zone').classList.add('hidden-el');
+            document.getElementById('result-zone').classList.add('hidden-el');
+            document.getElementById('upload-zone').classList.remove('hidden-el');
         }
 
         elBtnAnalyze.addEventListener('click', async () => {
-            elLoadingZone.classList.remove('hidden-el');
+            document.getElementById('loading-zone').classList.remove('hidden-el');
             const formData = new FormData();
             formData.append('file', currentFile);
             try {
@@ -185,19 +254,30 @@
                 });
                 const data = await response.json();
                 showResult(data);
+
+                // GUARDAR EN HISTORIAL SI ES PRO
+                if (userProfile.isPro) {
+                    analysisHistory.push({
+                        name: data.nombre_comun,
+                        type: data.prediccion,
+                        conf: data.confianza,
+                        icon: data.prediccion === 'VENENOSO' ? '☠️' : '🍄',
+                        date: new Date().toLocaleDateString()
+                    });
+                    localStorage.setItem('fungiHistory', JSON.stringify(analysisHistory));
+                }
+
             } catch (error) {
-                alert("Error de conexión con Colab");
-                elLoadingZone.classList.add('hidden-el');
+                alert("Error de conexión");
+                document.getElementById('loading-zone').classList.add('hidden-el');
             }
         });
 
         function showResult(data) {
-            elLoadingZone.classList.add('hidden-el');
-            elResultZone.classList.remove('hidden-el');
+            document.getElementById('loading-zone').classList.add('hidden-el');
+            document.getElementById('result-zone').classList.remove('hidden-el');
             const isPoison = data.prediccion === 'VENENOSO';
-            const color = isPoison ? '#ef4444' : '#22c55e'; 
-
-            document.getElementById('result-bg').style.backgroundColor = color;
+            const color = isPoison ? '#ef4444' : '#22c55e';
             document.getElementById('result-title').textContent = data.prediccion;
             document.getElementById('result-title').style.color = color;
             document.getElementById('result-icon').textContent = isPoison ? '☠️' : '✅';
@@ -208,6 +288,19 @@
             bar.style.backgroundColor = color;
             setTimeout(() => { bar.style.width = `${data.confianza * 100}%`; }, 100);
         }
+
+        // API CHECK
+        async function checkApiStatus() {
+            const dot = document.getElementById('api-dot');
+            const txt = document.getElementById('api-status-text');
+            try {
+                const res = await fetch(`${NGROK_URL}/`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
+                if (res.ok) { dot.className = 'w-3 h-3 rounded-full bg-green-500 shadow-[0_0_12px_#22c55e]'; txt.textContent = 'Online'; }
+            } catch (e) { dot.className = 'w-3 h-3 rounded-full bg-red-500'; txt.textContent = 'Offline'; }
+        }
+        setInterval(checkApiStatus, 10000);
+        checkApiStatus();
+        updateAccountUI(); // Inicializar UI
     </script>
 </body>
 </html>
