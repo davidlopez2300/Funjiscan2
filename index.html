@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FungiScan | Laboratorio Botánico</title>
+    <title>FungiScan | Análisis Neuronal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0d1f0f; color: #e2f5e6; }
@@ -13,13 +13,8 @@
             border: 1px solid rgba(74, 222, 128, 0.15);
         }
         .glow-text { text-shadow: 0 0 15px rgba(74, 222, 128, 0.5); }
-        .glow-box { box-shadow: 0 0 30px rgba(74, 222, 128, 0.1); }
         .hidden-el { display: none !important; }
-        
-        /* Custom Scrollbar para el historial */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-        ::-webkit-scrollbar-thumb { background: rgba(74, 222, 128, 0.3); border-radius: 10px; }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans antialiased selection:bg-green-500 selection:text-white">
@@ -28,88 +23,95 @@
         <div class="flex items-center gap-3">
             <span class="text-3xl">🍄</span>
             <h1 class="text-2xl font-bold tracking-wider text-green-400 glow-text">FungiScan</h1>
-            <span class="ml-2 px-2 py-0.5 bg-gradient-to-r from-green-600 to-green-400 text-black font-bold text-[10px] rounded uppercase tracking-widest shadow-lg">PRO</span>
+            <span class="ml-2 px-2 py-0.5 bg-green-900/50 text-green-300 text-xs rounded-full border border-green-700/50">PRO</span>
         </div>
-        <div class="flex items-center gap-6">
-            <div class="hidden md:flex gap-4 text-sm text-green-100/60">
-                <a href="#" class="hover:text-green-400 transition-colors">Laboratorio</a>
-                <a href="#" class="hover:text-green-400 transition-colors">Enciclopedia</a>
-                <a href="#" class="hover:text-green-400 transition-colors">Mi Cuenta</a>
-            </div>
-            <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/5">
-                <div id="api-dot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
-                <span id="api-status-text" class="text-xs uppercase tracking-widest text-gray-400 font-semibold">Buscando Servidor...</span>
-            </div>
+        <div class="flex items-center gap-2 bg-black/30 px-3 py-1.5 rounded-full border border-white/5">
+            <div id="api-dot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
+            <span id="api-status-text" class="text-xs uppercase tracking-widest text-gray-400 font-semibold">Buscando Servidor...</span>
         </div>
     </nav>
 
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 pt-28 pb-12 flex flex-col">
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 pt-28 pb-12">
         
-        <div class="mb-8 border-b border-green-500/20 pb-6">
-            <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-2">
-                Análisis <span class="text-green-400 italic font-serif glow-text">Morfológico</span>
-            </h2>
-            <p class="text-green-100/60 text-lg">Sube una fotografía clara para clasificar la taxonomía del espécimen en tiempo real.</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
+            <div class="lg:col-span-5 space-y-8">
+                <h2 class="text-6xl md:text-7xl font-extrabold leading-tight">
+                    ¿Es seguro <br>
+                    <span class="text-green-400 italic font-serif glow-text">este hongo?</span>
+                </h2>
+                <p class="text-xl text-green-100/70 leading-relaxed">
+                    Sube una fotografía clara y nuestro modelo de visión artificial analizará su fisonomía para determinar si es seguro o venenoso.
+                </p>
+                
+                <div class="p-6 bg-red-950/30 border border-red-500/30 rounded-3xl flex gap-5">
+                    <span class="text-4xl">⚠️</span>
+                    <div>
+                        <h4 class="text-red-400 font-bold mb-1 uppercase tracking-wider text-sm">Advertencia Importante</h4>
+                        <p class="text-xs text-red-200/80 leading-relaxed">
+                            Esta herramienta tiene fines netamente educativos e ilustrativos. 
+                            NUNCA manipules ni consumas un espécimen silvestre basándote únicamente en el resultado de esta o cualquier otra aplicación. La identificación errónea puede ser letal.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 pt-4">
+                    <div class="glass-panel p-4 rounded-2xl">
+                        <p class="text-[10px] uppercase text-green-500/50 font-bold mb-1">Precisión</p>
+                        <p class="text-2xl font-mono">92.4%</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-2xl">
+                        <p class="text-[10px] uppercase text-green-500/50 font-bold mb-1">Modelo</p>
+                        <p class="text-2xl font-mono">EfficientNet</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="lg:col-span-7 w-full">
-                <div class="glass-panel p-2 md:p-4 rounded-[2rem] glow-box relative overflow-hidden h-[600px] flex flex-col">
+                <div class="glass-panel p-4 rounded-[2.5rem] shadow-2xl relative overflow-hidden h-[580px] flex flex-col bg-black/20">
                     
-                    <div id="upload-zone" class="flex-grow border-2 border-dashed border-green-500/30 rounded-3xl flex flex-col items-center justify-center cursor-pointer hover:border-green-400 hover:bg-green-400/5 transition-all group m-2 bg-black/20">
-                        <div class="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <span class="text-5xl opacity-80 group-hover:opacity-100">📸</span>
+                    <div id="upload-zone" class="flex-grow border-2 border-dashed border-green-500/20 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer hover:border-green-400 hover:bg-green-400/5 transition-all group m-2">
+                        <div class="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="text-4xl">📸</span>
                         </div>
-                        <p class="text-2xl font-bold text-green-100 mb-2">Arrastra tu fotografía aquí</p>
-                        <p class="text-sm text-green-100/50 mb-6">o haz clic para explorar tus archivos</p>
-                        <div class="px-6 py-2 bg-green-500/20 text-green-400 rounded-full text-sm font-semibold border border-green-500/30">
-                            Soporta JPG, PNG, WEBP
-                        </div>
+                        <p class="text-xl font-bold text-green-100">Haz clic o arrastra una foto</p>
+                        <p class="text-sm text-green-100/40 mt-1 uppercase tracking-widest">Formatos admitidos: JPG, PNG</p>
                         <input type="file" id="file-input" class="hidden" accept="image/*">
                     </div>
 
-                    <div id="preview-zone" class="hidden-el flex-grow flex flex-col p-4 w-full h-full">
-                        <div class="relative w-full flex-grow mb-6 rounded-2xl overflow-hidden border-2 border-green-500/30 bg-black/50">
+                    <div id="preview-zone" class="hidden-el flex-grow flex flex-col p-2 h-full">
+                        <div class="relative w-full flex-grow mb-4 rounded-3xl overflow-hidden border border-green-500/30 bg-black/40">
                             <img id="image-preview" src="" alt="Preview" class="w-full h-full object-contain">
-                            <button id="btn-cancel" class="absolute top-4 right-4 w-10 h-10 bg-red-500/90 backdrop-blur text-white rounded-full flex items-center justify-center hover:bg-red-400 transition-colors shadow-2xl font-bold text-lg">✕</button>
+                            <button id="btn-cancel" class="absolute top-4 right-4 w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform font-bold">✕</button>
                         </div>
-                        <button id="btn-analyze" class="w-full py-5 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-400 hover:to-green-300 text-gray-900 font-black text-xl rounded-2xl transition-all shadow-[0_0_30px_rgba(74,222,128,0.4)] hover:shadow-[0_0_40px_rgba(74,222,128,0.6)] transform hover:-translate-y-1">
-                            EJECUTAR RED NEURONAL
+                        <button id="btn-analyze" class="w-full py-5 bg-green-500 hover:bg-green-400 text-gray-900 font-black text-xl rounded-2xl transition-all shadow-[0_0_30px_rgba(74,222,128,0.3)]">
+                            INICIAR ANÁLISIS MOLECULAR
                         </button>
                     </div>
 
-                    <div id="loading-zone" class="hidden-el absolute inset-0 glass-panel flex flex-col items-center justify-center z-10 backdrop-blur-xl bg-black/80">
-                        <div class="relative">
-                            <div class="w-32 h-32 border-4 border-green-500/30 border-t-green-400 rounded-full animate-spin"></div>
-                            <span class="text-5xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse">🍄</span>
-                        </div>
-                        <p class="mt-8 text-green-400 font-mono text-lg tracking-widest uppercase animate-pulse">Extrayendo características...</p>
+                    <div id="loading-zone" class="hidden-el absolute inset-0 glass-panel flex flex-col items-center justify-center z-10 bg-black/80">
+                        <span class="text-6xl animate-bounce mb-6">🍄</span>
+                        <p class="text-green-400 font-mono text-sm tracking-widest uppercase animate-pulse">Procesando redes neuronales...</p>
                     </div>
 
-                    <div id="result-zone" class="hidden-el absolute inset-0 z-20 flex flex-col items-center justify-center p-8 text-center transition-all bg-black/90">
+                    <div id="result-zone" class="hidden-el absolute inset-0 z-20 flex flex-col items-center justify-center p-10 text-center transition-all">
                         <div id="result-bg" class="absolute inset-0 opacity-10"></div>
-                        <div class="relative z-30 flex flex-col items-center w-full max-w-lg">
-                            <div id="result-icon" class="text-7xl mb-6 drop-shadow-2xl"></div>
-                            <h3 id="result-title" class="text-5xl font-black mb-2 tracking-tight"></h3>
-                            <p id="result-name" class="text-2xl italic font-serif text-white/90 mb-8 border-b border-white/20 pb-4 w-full"></p>
+                        <div class="relative z-30 flex flex-col items-center w-full max-w-md">
+                            <div id="result-icon" class="text-7xl mb-4"></div>
+                            <h3 id="result-title" class="text-5xl font-black mb-1"></h3>
+                            <p id="result-name" class="text-2xl italic font-serif text-white/80 mb-6"></p>
                             
-                            <div class="w-full bg-white/5 rounded-full h-4 mb-3 overflow-hidden border border-white/10 relative">
-                                <div id="result-bar" class="h-full rounded-full transition-all duration-1500 ease-out w-0 relative overflow-hidden">
+                            <div class="w-full bg-white/10 rounded-full h-3 mb-2 overflow-hidden border border-white/5">
+                                <div id="result-bar" class="h-full rounded-full transition-all duration-1000 w-0 relative">
                                     <div class="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]"></div>
                                 </div>
                             </div>
-                            <div class="flex justify-between w-full text-sm text-white/60 mb-8 font-mono">
-                                <span>Certeza del modelo</span>
-                                <span id="result-conf" class="font-bold text-white">0%</span>
-                            </div>
+                            <p id="result-conf" class="text-[10px] text-white/40 mb-8 uppercase tracking-widest w-full text-right">Confianza: 0%</p>
                             
-                            <div class="w-full bg-black/50 p-6 rounded-2xl border border-white/10 mb-8 backdrop-blur-md">
-                                <p id="result-warn" class="text-base leading-relaxed text-white/90"></p>
-                            </div>
+                            <p id="result-warn" class="text-sm bg-black/40 p-5 rounded-2xl border border-white/10 mb-8 leading-relaxed"></p>
                             
-                            <button id="btn-reset" class="px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all font-bold tracking-wide">
-                                Analizar nuevo espécimen
+                            <button id="btn-reset" class="px-8 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-colors text-xs font-bold uppercase tracking-widest">
+                                Analizar otra muestra
                             </button>
                         </div>
                     </div>
@@ -117,84 +119,8 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-5 flex flex-col gap-6">
-                
-                <div class="glass-panel p-6 rounded-3xl border-l-4 border-l-red-500 bg-red-950/20">
-                    <div class="flex items-start gap-4">
-                        <span class="text-3xl mt-1">⚠️</span>
-                        <div>
-                            <h4 class="text-red-400 font-bold mb-2 text-lg">Protocolo de Seguridad Botánica</h4>
-                            <p class="text-sm text-red-200/80 leading-relaxed">
-                                FungiScan es una herramienta de <strong>educación botánica</strong> basada en redes neuronales. 
-                                La variabilidad fenotípica de los hongos en la naturaleza es inmensa. <br><br>
-                                NUNCA consumas un espécimen basándote en esta clasificación. La ingesta de especies como la <em>Amanita phalloides</em> causa falla hepática irreversible.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-panel p-6 rounded-3xl">
-                    <h4 class="font-bold text-green-400 mb-4 flex items-center gap-2">
-                        <span>🧠</span> Motor de Inferencia
-                    </h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-black/30 p-4 rounded-2xl border border-green-500/10">
-                            <p class="text-xs text-green-100/50 uppercase tracking-wider mb-1">Arquitectura</p>
-                            <p class="font-mono text-sm text-white">EfficientNetB0</p>
-                        </div>
-                        <div class="bg-black/30 p-4 rounded-2xl border border-green-500/10">
-                            <p class="text-xs text-green-100/50 uppercase tracking-wider mb-1">Precisión Base</p>
-                            <p class="font-mono text-sm text-white">92.4%</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group">
-                    <div class="flex justify-between items-center mb-6">
-                        <h4 class="font-bold text-white flex items-center gap-2">
-                            <span>📚</span> Historial de Análisis
-                        </h4>
-                        <span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded font-bold uppercase">Función PRO</span>
-                    </div>
-                    
-                    <div class="space-y-3 opacity-30 filter blur-[2px] transition-all duration-300 group-hover:blur-[1px]">
-                        <div class="flex items-center gap-4 bg-black/40 p-3 rounded-xl">
-                            <div class="w-10 h-10 bg-green-900 rounded-lg"></div>
-                            <div class="flex-grow">
-                                <div class="h-3 w-24 bg-white/20 rounded mb-2"></div>
-                                <div class="h-2 w-16 bg-white/10 rounded"></div>
-                            </div>
-                            <span class="text-green-500 text-sm">✅</span>
-                        </div>
-                        <div class="flex items-center gap-4 bg-black/40 p-3 rounded-xl">
-                            <div class="w-10 h-10 bg-red-900 rounded-lg"></div>
-                            <div class="flex-grow">
-                                <div class="h-3 w-32 bg-white/20 rounded mb-2"></div>
-                                <div class="h-2 w-20 bg-white/10 rounded"></div>
-                            </div>
-                            <span class="text-red-500 text-sm">☠️</span>
-                        </div>
-                    </div>
-
-                    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
-                        <span class="text-4xl mb-3">🔒</span>
-                        <p class="text-sm font-medium text-green-100 mb-3 text-center px-4">Guarda, exporta y mapea geográficamente tus descubrimientos.</p>
-                        <button class="px-5 py-2 bg-gradient-to-r from-green-600 to-green-500 rounded-full text-xs font-bold text-black uppercase tracking-wider hover:scale-105 transition-transform">
-                            Desbloquear PRO
-                        </button>
-                    </div>
-                </div>
-
-            </div>
         </div>
     </main>
-
-    <style>
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-    </style>
 
     <script>
         const NGROK_URL = "https://blitz-casing-catalog.ngrok-free.dev"; 
@@ -213,10 +139,6 @@
         async function checkApiStatus() {
             const dot = document.getElementById('api-dot');
             const txt = document.getElementById('api-status-text');
-            
-            // Verificación eliminada para evitar que bloquee tu URL real
-            if (!NGROK_URL) return; 
-
             try {
                 const res = await fetch(`${NGROK_URL}/`, {
                     method: 'GET',
@@ -224,34 +146,25 @@
                 });
                 if (res.ok) {
                     dot.className = 'w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]';
-                    txt.textContent = 'Servidor en Línea';
-                    txt.className = 'text-xs uppercase tracking-widest text-green-400 font-semibold';
+                    txt.textContent = 'Servidor Online';
                 }
             } catch (e) {
                 dot.className = 'w-2.5 h-2.5 rounded-full bg-red-500';
-                txt.textContent = 'Servidor Desconectado';
-                txt.className = 'text-xs uppercase tracking-widest text-red-400 font-semibold';
+                txt.textContent = 'Servidor Offline';
             }
         }
         setInterval(checkApiStatus, 10000);
         checkApiStatus();
 
         elUploadZone.addEventListener('click', () => elFileInput.click());
-        
-        elUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); elUploadZone.classList.add('border-green-400', 'bg-green-400/10'); });
-        elUploadZone.addEventListener('dragleave', () => elUploadZone.classList.remove('border-green-400', 'bg-green-400/10'));
+        elUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); elUploadZone.classList.add('border-green-400'); });
         elUploadZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            elUploadZone.classList.remove('border-green-400', 'bg-green-400/10');
             if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
         });
-
-        elFileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) handleFile(e.target.files[0]);
-        });
+        elFileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
 
         function handleFile(file) {
-            if (!file.type.startsWith('image/')) { alert('Por favor sube una imagen válida.'); return; }
             currentFile = file;
             elImagePreview.src = URL.createObjectURL(file);
             elUploadZone.classList.add('hidden-el');
@@ -263,7 +176,6 @@
 
         function resetApp() {
             currentFile = null;
-            elFileInput.value = "";
             elPreviewZone.classList.add('hidden-el');
             elResultZone.classList.add('hidden-el');
             elLoadingZone.classList.add('hidden-el');
@@ -272,26 +184,19 @@
         }
 
         elBtnAnalyze.addEventListener('click', async () => {
-            if (!currentFile) return;
-
             elLoadingZone.classList.remove('hidden-el');
-            
             const formData = new FormData();
             formData.append('file', currentFile);
-
             try {
                 const response = await fetch(`${NGROK_URL}/predict`, {
                     method: 'POST',
                     headers: { 'ngrok-skip-browser-warning': 'true' },
                     body: formData
                 });
-
-                if (!response.ok) throw new Error("Error en el servidor");
                 const data = await response.json();
                 showResult(data);
-
             } catch (error) {
-                alert("Error de conexión. Verifica que la celda final de tu Colab siga en ejecución y que la URL de Ngrok no haya caducado.");
+                alert("Error de conexión con Colab");
                 elLoadingZone.classList.add('hidden-el');
             }
         });
@@ -299,7 +204,6 @@
         function showResult(data) {
             elLoadingZone.classList.add('hidden-el');
             elResultZone.classList.remove('hidden-el');
-
             const isPoison = data.prediccion === 'VENENOSO';
             const color = isPoison ? '#ef4444' : '#22c55e'; 
 
@@ -307,15 +211,12 @@
             document.getElementById('result-title').textContent = data.prediccion;
             document.getElementById('result-title').style.color = color;
             document.getElementById('result-icon').textContent = isPoison ? '☠️' : '✅';
-            document.getElementById('result-name').textContent = data.nombre_comun || "Especie Analizada";
+            document.getElementById('result-name').textContent = data.nombre_comun;
             document.getElementById('result-warn').textContent = data.advertencia;
-            
-            const confPercent = Math.round(data.confianza * 100);
-            document.getElementById('result-conf').textContent = `${confPercent}%`;
-            
+            document.getElementById('result-conf').textContent = `Confianza: ${Math.round(data.confianza * 100)}%`;
             const bar = document.getElementById('result-bar');
             bar.style.backgroundColor = color;
-            setTimeout(() => { bar.style.width = `${confPercent}%`; }, 100);
+            setTimeout(() => { bar.style.width = `${data.confianza * 100}%`; }, 100);
         }
     </script>
 </body>
