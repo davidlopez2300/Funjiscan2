@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FungiScan | Análisis Neuronal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0d1f0f; color: #e2f5e6; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(74, 222, 128, 0.1);
+        }
+        .glow-text { text-shadow: 0 0 15px rgba(74, 222, 128, 0.5); }
+        .hidden-el { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-green-500 selection:text-white">
+
+    <nav class="fixed top-0 w-full glass-panel z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <span class="text-3xl">🍄</span>
+            <h1 class="text-2xl font-bold tracking-wider text-green-400 glow-text">FungiScan</h1>
+            <span class="ml-2 px-2 py-0.5 bg-green-900/50 text-green-300 text-xs rounded-full border border-green-700/50">PRO</span>
+        </div>
+        <div class="flex items-center gap-2 bg-black/30 px-3 py-1.5 rounded-full border border-white/5">
+            <div id="api-dot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
+            <span id="api-status-text" class="text-xs uppercase tracking-widest text-gray-400 font-semibold">Buscando Servidor...</span>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto px-4 pt-28 pb-12 gap-12 w-full">
+        
+        <div class="flex-1 space-y-6 text-center md:text-left">
+            <h2 class="text-5xl md:text-6xl font-extrabold leading-tight">
+                ¿Es seguro <br>
+                <span class="text-green-400 italic font-serif glow-text">este hongo?</span>
+            </h2>
+            <p class="text-lg text-green-100/70 max-w-md mx-auto md:mx-0">
+                Sube una fotografía clara y nuestro modelo de visión artificial analizará su fisonomía en tiempo real para determinar si es comestible o venenoso.
+            </p>
+            
+            <div class="mt-8 p-4 bg-red-950/30 border border-red-500/30 rounded-2xl flex gap-4 text-left max-w-md mx-auto md:mx-0">
+                <span class="text-3xl">⚠️</span>
+                <p class="text-xs text-red-200/80 leading-relaxed">
+                    <strong class="text-red-400">DISCLAIMER LEGAL:</strong> Esta herramienta tiene fines netamente educativos e ilustrativos. 
+                    NUNCA consumas un espécimen silvestre basándote únicamente en el resultado de esta o cualquier otra aplicación.
+                </p>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full max-w-md">
+            <div class="glass-panel p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                
+                <div id="upload-zone" class="border-2 border-dashed border-green-500/30 rounded-2xl h-80 flex flex-col items-center justify-center cursor-pointer hover:border-green-400/60 hover:bg-green-400/5 transition-all group">
+                    <span class="text-5xl mb-4 opacity-50 group-hover:opacity-100 transition-opacity">📸</span>
+                    <p class="text-lg font-medium text-green-100">Haz clic o arrastra una foto</p>
+                    <p class="text-sm text-green-100/50 mt-2">Formatos: JPG, PNG</p>
+                    <input type="file" id="file-input" class="hidden" accept="image/*">
+                </div>
+
+                <div id="preview-zone" class="hidden-el flex flex-col items-center">
+                    <div class="relative w-full h-64 mb-6">
+                        <img id="image-preview" src="" alt="Preview" class="w-full h-full object-cover rounded-2xl border-2 border-green-500/20">
+                        <button id="btn-cancel" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg">✕</button>
+                    </div>
+                    <button id="btn-analyze" class="w-full py-4 bg-green-500 hover:bg-green-400 text-gray-900 font-bold text-lg rounded-xl transition-colors shadow-[0_0_20px_rgba(74,222,128,0.3)]">
+                        Iniciar Análisis Molecular
+                    </button>
+                </div>
+
+                <div id="loading-zone" class="hidden-el absolute inset-0 glass-panel flex flex-col items-center justify-center z-10">
+                    <span class="text-6xl animate-bounce mb-4">🍄</span>
+                    <p class="text-green-400 font-mono text-sm tracking-widest uppercase animate-pulse">Procesando redes neuronales...</p>
+                </div>
+
+                <div id="result-zone" class="hidden-el absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center transition-all">
+                    <div id="result-bg" class="absolute inset-0 opacity-20"></div>
+                    <div class="relative z-30 flex flex-col items-center w-full">
+                        <div id="result-icon" class="text-6xl mb-4"></div>
+                        <h3 id="result-title" class="text-4xl font-extrabold mb-1"></h3>
+                        <p id="result-name" class="text-xl italic font-serif text-white/80 mb-6"></p>
+                        
+                        <div class="w-full bg-black/40 rounded-full h-3 mb-2 overflow-hidden">
+                            <div id="result-bar" class="h-full rounded-full transition-all duration-1000 w-0"></div>
+                        </div>
+                        <p id="result-conf" class="text-xs text-white/60 mb-6 w-full text-right">Confianza: 0%</p>
+                        
+                        <p id="result-warn" class="text-sm bg-black/30 p-4 rounded-xl border border-white/10 mb-6 leading-relaxed"></p>
+                        
+                        <button id="btn-reset" class="px-6 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-colors text-sm">
+                            Analizar otro espécimen
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURACIÓN (¡SOLO CAMBIA ESTO!)
+        // ==========================================
+        const NGROK_URL = "https://blitz-casing-catalog.ngrok-free.dev"; 
+        // Ejemplo: "https://1234-abcd.ngrok-free.app" (SIN la barra al final)
+
+        // Elementos del DOM
+        const elUploadZone = document.getElementById('upload-zone');
+        const elFileInput = document.getElementById('file-input');
+        const elPreviewZone = document.getElementById('preview-zone');
+        const elImagePreview = document.getElementById('image-preview');
+        const elBtnCancel = document.getElementById('btn-cancel');
+        const elBtnAnalyze = document.getElementById('btn-analyze');
+        const elLoadingZone = document.getElementById('loading-zone');
+        const elResultZone = document.getElementById('result-zone');
+        
+        let currentFile = null;
+
+        // ==========================================
+        // 2. CONEXIÓN CON EL BACKEND EN COLAB
+        // ==========================================
+        async function checkApiStatus() {
+            const dot = document.getElementById('api-dot');
+            const txt = document.getElementById('api-status-text');
+            if (NGROK_URL === "https://blitz-casing-catalog.ngrok-free.dev") return;
+
+            try {
+                const res = await fetch(`${NGROK_URL}/`, {
+                    method: 'GET',
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                if (res.ok) {
+                    dot.className = 'w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]';
+                    txt.textContent = 'API Conectada';
+                    txt.className = 'text-xs uppercase tracking-widest text-green-400 font-semibold';
+                }
+            } catch (e) {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-red-500';
+                txt.textContent = 'API Desconectada';
+                txt.className = 'text-xs uppercase tracking-widest text-red-400 font-semibold';
+            }
+        }
+        setInterval(checkApiStatus, 10000);
+        checkApiStatus();
+
+        // ==========================================
+        // 3. MANEJO DE LA INTERFAZ
+        // ==========================================
+        
+        // Clic para subir foto
+        elUploadZone.addEventListener('click', () => elFileInput.click());
+        
+        // Arrastrar y soltar
+        elUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); elUploadZone.classList.add('border-green-400'); });
+        elUploadZone.addEventListener('dragleave', () => elUploadZone.classList.remove('border-green-400'));
+        elUploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            elUploadZone.classList.remove('border-green-400');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+
+        // Seleccionar archivo
+        elFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) { alert('Por favor sube una imagen válida.'); return; }
+            currentFile = file;
+            elImagePreview.src = URL.createObjectURL(file);
+            elUploadZone.classList.add('hidden-el');
+            elPreviewZone.classList.remove('hidden-el');
+        }
+
+        // Cancelar foto
+        elBtnCancel.addEventListener('click', resetApp);
+        document.getElementById('btn-reset').addEventListener('click', resetApp);
+
+        function resetApp() {
+            currentFile = null;
+            elFileInput.value = "";
+            elPreviewZone.classList.add('hidden-el');
+            elResultZone.classList.add('hidden-el');
+            elLoadingZone.classList.add('hidden-el');
+            elUploadZone.classList.remove('hidden-el');
+            document.getElementById('result-bar').style.width = '0%';
+        }
+
+        // ==========================================
+        // 4. ENVIAR A LA RED NEURONAL
+        // ==========================================
+        elBtnAnalyze.addEventListener('click', async () => {
+            if (!currentFile) return;
+            if (NGROK_URL === "https://blitz-casing-catalog.ngrok-free.dev") {
+                alert("¡Alto ahí! Tienes que poner tu URL de Ngrok en el código fuente (Línea 146).");
+                return;
+            }
+
+            // Mostrar carga
+            elLoadingZone.classList.remove('hidden-el');
+            
+            const formData = new FormData();
+            formData.append('file', currentFile);
+
+            try {
+                const response = await fetch(`${NGROK_URL}/predict`, {
+                    method: 'POST',
+                    headers: { 'ngrok-skip-browser-warning': 'true' },
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error("Error en el servidor");
+                const data = await response.json();
+                showResult(data);
+
+            } catch (error) {
+                alert("Error conectando con Colab. Revisa que tu servidor esté corriendo.");
+                elLoadingZone.classList.add('hidden-el');
+            }
+        });
+
+        function showResult(data) {
+            elLoadingZone.classList.add('hidden-el');
+            elResultZone.classList.remove('hidden-el');
+
+            const isPoison = data.prediccion === 'VENENOSO';
+            const color = isPoison ? '#ef4444' : '#22c55e'; // Rojo o Verde
+
+            document.getElementById('result-bg').style.backgroundColor = color;
+            document.getElementById('result-title').textContent = data.prediccion;
+            document.getElementById('result-title').style.color = color;
+            document.getElementById('result-icon').textContent = isPoison ? '☠️' : '✅';
+            document.getElementById('result-name').textContent = data.nombre_comun || "Especie Analizada";
+            document.getElementById('result-warn').textContent = data.advertencia;
+            
+            const confPercent = Math.round(data.confianza * 100);
+            document.getElementById('result-conf').textContent = `Confianza IA: ${confPercent}%`;
+            
+            const bar = document.getElementById('result-bar');
+            bar.style.backgroundColor = color;
+            setTimeout(() => { bar.style.width = `${confPercent}%`; }, 100);
+        }
+    </script>
+</body>
+</html>
