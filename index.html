@@ -283,10 +283,10 @@
             document.getElementById('result-icon').textContent = isPoison ? '☠️' : '✅';
             document.getElementById('result-name').textContent = data.nombre_comun;
             document.getElementById('result-warn').textContent = data.advertencia;
-            //document.getElementById('result-conf').textContent = `Confianza: ${Math.round(data.confianza * 100)}%`;
+            document.getElementById('result-conf').textContent = `Confianza: ${Math.round(data.confianza * 100)}%`;
             const bar = document.getElementById('result-bar');
             bar.style.backgroundColor = color;
-            //setTimeout(() => { bar.style.width = `${data.confianza * 100}%`; }, 100);
+            setTimeout(() => { bar.style.width = `${data.confianza * 100}%`; }, 100);
         }
 
         // API CHECK
