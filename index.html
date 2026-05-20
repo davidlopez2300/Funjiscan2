@@ -1558,12 +1558,12 @@ function closeGuestLimitModal(tab) {
     document.getElementById('modal-guest-limit').classList.remove('open');
     document.body.style.overflow = '';
     // Cambiar a la vista Mi Cuenta
-    switchView('cuenta');
+    switchView('account');
     // Activar el tab correspondiente (login o register)
     requestAnimationFrame(() => {
         setTimeout(() => {
             switchAuthTab(tab);
-            const authSection = document.getElementById('view-cuenta');
+            const authSection = document.getElementById('view-account');
             if (authSection) {
                 authSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
