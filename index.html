@@ -313,7 +313,7 @@
 <main id="view-lab" class="view active w-full">
 
     <!-- ── HERO CAROUSEL (full-width, pure visual) ─── -->
-    <div id="hero-carousel" class="relative w-full overflow-hidden bg-black" style="height:100svh; min-height:560px;">
+    <div id="hero-carousel" class="relative w-full overflow-hidden bg-black" style="height:100svh; min-height:720px;">
         <!-- slides injected by JS — pure images, no labels -->
         <div id="hero-dots" class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-20"></div>
 
@@ -454,6 +454,7 @@
      VIEW — PLANES
 ══════════════════════════════════════════ -->
 <main id="view-planes" class="view w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-40 pb-28">
+    <div id="planes-section"></div>
 
     <div class="text-center max-w-2xl mx-auto mb-16 anim-fade-up">
         <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-3">Suscripciones</p>
@@ -868,7 +869,7 @@
             </div>
 
             <div class="space-y-3">
-                <button onclick="activatePro(); closePaywallModal();" class="btn-primary w-full py-4 text-sm font-black shadow-[0_0_40px_rgba(90,176,88,.25)]">
+                <button onclick="closePaywallAndGoToPlanes();" class="btn-primary w-full py-4 text-sm font-black shadow-[0_0_40px_rgba(90,176,88,.25)]">
                     Obtener Pro — $15.000 COP
                 </button>
                 <button onclick="closePaywallModal()" class="btn-ghost w-full py-3.5 text-sm">
@@ -895,22 +896,50 @@ let userProfile = {
 let isLoggedIn    = false;
 let analysisHistory = JSON.parse(localStorage.getItem('fungiHistory') || '[]');
 
-/* ─── FREE PLAN LIMITER ───────────────────────────── */
+/* ─── PERSISTENCIA DE ESTADO DE CUENTA ───────────── */
+// Clave usada para guardar datos en localStorage por usuario
+function getUserStorageKey(suffix) {
+    return 'fungi_' + (userProfile.email || 'guest') + '_' + suffix;
+}
+
+// Guarda el estado PRO/FREE del usuario actual en localStorage
+function persistAccountState() {
+    if (!userProfile.email) return;
+    const key = getUserStorageKey('isPro');
+    localStorage.setItem(key, userProfile.isPro ? '1' : '0');
+}
+
+// Restaura el estado PRO/FREE del usuario actual desde localStorage
+function restoreAccountState() {
+    if (!userProfile.email) return;
+    const key = getUserStorageKey('isPro');
+    const saved = localStorage.getItem(key);
+    if (saved !== null) {
+        userProfile.isPro = saved === '1';
+    }
+}
+
+/* ─── FREE PLAN LIMITER (vinculado por usuario) ──── */
 const FREE_LIMIT = 3;
 
 function getUsageData() {
-    const raw  = localStorage.getItem('scanUsage');
+    // Si no hay sesión iniciada, no hay límite activo — devuelve contador vacío sin persistir
+    if (!isLoggedIn) return { count: 0, resetAt: Date.now() + 24 * 60 * 60 * 1000 };
+    const key  = getUserStorageKey('scanUsage');
+    const raw  = localStorage.getItem(key);
     const data = raw ? JSON.parse(raw) : { count: 0, resetAt: 0 };
     const now  = Date.now();
     if (now >= data.resetAt) {
-        // New 24-hour window
+        // Nueva ventana de 24 horas
         return { count: 0, resetAt: now + 24 * 60 * 60 * 1000 };
     }
     return data;
 }
 
 function saveUsageData(data) {
-    localStorage.setItem('scanUsage', JSON.stringify(data));
+    if (!isLoggedIn) return; // Solo persiste si hay sesión
+    const key = getUserStorageKey('scanUsage');
+    localStorage.setItem(key, JSON.stringify(data));
 }
 
 function getRemainingScans() {
@@ -928,41 +957,43 @@ function incrementUsage() {
 
 function updateScanCounter() {
   if (userProfile.isPro) {
-  document.getElementById('scan-counter-wrap').style.display = 'none';
-  return;
+      document.getElementById('scan-counter-wrap').style.display = 'none';
+      return;
   }
   document.getElementById('scan-counter-wrap').style.display = '';
   const remaining = getRemainingScans();
   const text = remaining === 0
-  ? 'Límite diario alcanzado'
-  : `${remaining} análisis disponible${remaining !== 1 ? 's' : ''} hoy`;
+      ? 'Límite diario alcanzado'
+      : `${remaining} análisis disponible${remaining !== 1 ? 's' : ''} hoy`;
   document.getElementById('scans-left-text').textContent = text;
-  
-  // Update the 3 dots
+
+  // Actualiza los 3 puntos
   for (let i = 0; i < 3; i++) {
-  const dot = document.getElementById('dot-' + i);
-  if (!dot) continue;
-  dot.style.background = i < remaining
-  ? 'var(--primary)'
-  : 'rgba(255,255,255,0.12)';
-  }
-  
-  // Lock/unlock uploader
-  const zone = document.getElementById('upload-zone');
-  if (remaining === 0) {
-  zone.classList.add('locked');
-  zone.title = 'Límite diario alcanzado — Mejora a Pro';
-  } else {
-  zone.classList.remove('locked');
-  zone.title = '';
-  }
+      const dot = document.getElementById('dot-' + i);
+      if (!dot) continue;
+      dot.style.background = i < remaining
+          ? 'var(--primary)'
+          : 'rgba(255,255,255,0.12)';
   }
 
-  function resetDemo() {
-  localStorage.removeItem('scanUsage');
-  updateScanCounter();
-  showToast('Demo reiniciada — 3 análisis disponibles');
+  // Bloquear/desbloquear uploader
+  const zone = document.getElementById('upload-zone');
+  if (remaining === 0) {
+      zone.classList.add('locked');
+      zone.title = 'Límite diario alcanzado — Mejora a Pro';
+  } else {
+      zone.classList.remove('locked');
+      zone.title = '';
   }
+}
+
+function resetDemo() {
+    if (isLoggedIn) {
+        localStorage.removeItem(getUserStorageKey('scanUsage'));
+    }
+    updateScanCounter();
+    showToast('Demo reiniciada — 3 análisis disponibles');
+}
 
 /* ─── FUNGI DATA ──────────────────────────────────── */
 const FUNGI_DATA = [
@@ -1074,7 +1105,12 @@ function handleLogin() {
     userProfile.email = email;
     userProfile.name  = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g, c => c.toUpperCase());
     isLoggedIn = true;
+    // Restaurar estado PRO/FREE guardado para este usuario
+    restoreAccountState();
+    // Restaurar historial del usuario
+    analysisHistory = JSON.parse(localStorage.getItem(getUserStorageKey('history')) || '[]');
     showDashboard();
+    updateScanCounter();
     showToast('Bienvenido, ' + userProfile.name);
 }
 
@@ -1085,17 +1121,29 @@ function handleRegister() {
     if (!name || !email || !password) return;
     userProfile.name  = name;
     userProfile.email = email;
+    userProfile.isPro = false;
     isLoggedIn = true;
+    // Guardar estado inicial FREE
+    persistAccountState();
+    // Historial vacío para cuenta nueva
+    analysisHistory = [];
     showDashboard();
+    updateScanCounter();
     showToast('Cuenta creada. ¡Bienvenido, ' + name + '!');
 }
 
 function handleLogout() {
+    // Resetear perfil en memoria (no borramos localStorage para que persista al volver)
     isLoggedIn = false;
+    userProfile.isPro = false;
+    userProfile.email = '';
+    userProfile.name  = 'Usuario UIS';
+    analysisHistory = [];
     document.getElementById('auth-wall').classList.remove('hidden');
     const dash = document.getElementById('account-dashboard');
     dash.classList.add('hidden');
     dash.classList.remove('grid');
+    updateScanCounter();
     showToast('Sesión cerrada');
 }
 
@@ -1115,12 +1163,14 @@ function togglePassword(inputId) {
 /* ─── PROFILE & PLAN ──────────────────────────────── */
 function toggleUserType() {
     userProfile.isPro = !userProfile.isPro;
+    persistAccountState(); // Guardar cambio en localStorage
     updateAccountUI();
     updateScanCounter();
 }
 
 function activatePro() {
     userProfile.isPro = true;
+    persistAccountState(); // Guardar estado PRO en localStorage
     updateScanCounter();
     if (isLoggedIn) updateAccountUI();
     showToast('¡Plan Pro activado! Análisis ilimitados.');
@@ -1310,7 +1360,9 @@ document.getElementById('btn-analyze').addEventListener('click', async () => {
                 conf: data.confianza,
                 date: now.toLocaleDateString('es-CO') + ' · ' + now.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' })
             });
-            localStorage.setItem('fungiHistory', JSON.stringify(analysisHistory));
+            // Guardar historial vinculado al usuario
+            const histKey = isLoggedIn ? getUserStorageKey('history') : 'fungiHistory';
+            localStorage.setItem(histKey, JSON.stringify(analysisHistory));
         }
 
         resetApp();
@@ -1412,6 +1464,24 @@ function openPaywallModal() {
 function closePaywallModal() {
     document.getElementById('modal-paywall').classList.remove('open');
     document.body.style.overflow = '';
+}
+
+function closePaywallAndGoToPlanes() {
+    // Cierra el modal primero
+    closePaywallModal();
+    // Cambia a la vista de Planes
+    switchView('planes');
+    // Desplazamiento suave hacia la sección de planes
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            const section = document.getElementById('planes-section');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }, 80);
+    });
 }
 
 /* ─── KEYBOARD CLOSE ──────────────────────────────── */
