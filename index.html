@@ -1107,14 +1107,7 @@ function resetHeroTimer() {
 }
 
 /* ─── NAVIGATION ────────��─────────────────────────── */
-function switchView(view) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + view).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-[var(--primary)]', 'font-bold'));
-    const btn = document.getElementById('nav-btn-' + view);
-    if (btn) btn.classList.add('text-[var(--primary)]', 'font-bold');
-    window.scrollTo({ top:0, behavior:'smooth' });
-}
+
 
 /* ─── SCROLL EFFECT ───────────────────────────────── */
 window.addEventListener('scroll', () => {
