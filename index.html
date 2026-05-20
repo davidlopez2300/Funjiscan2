@@ -970,17 +970,6 @@ const FUNGI_DATA = [
     { id:8, name:"Morchella esculenta",sci:"Morchella esculenta", type:"COMESTIBLE", habitat:"Bosques y praderas en primavera",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Morchella_esculenta_-_Linnaeus.jpg/640px-Morchella_esculenta_-_Linnaeus.jpg",                       desc:"La morilla. Aspecto alveolado inconfundible. Debe cocinarse antes de consumir ya que cruda contiene hemolisinas." }
 ];
 
-/* ─── HERO CAROUSEL IMAGES ────────────────────────── */
-const CAROUSEL_IMAGES = [
-     https://postimg.cc/hfwBCKcw
-    https://postimg.cc/zVMrdq8x
-https://postimg.cc/56GVPfbk
-https://postimg.cc/1fTQWysB
-https://postimg.cc/1fTQWysW
-https://postimg.cc/Ln7pym2j
-
-];
-
 /* ─── HERO CAROUSEL (pure visual, no labels) ─────── */
 let heroIndex = 0;
 let heroTimer  = null;
@@ -989,15 +978,15 @@ function buildHeroCarousel() {
     const wrap     = document.getElementById('hero-carousel');
     const dotsWrap = document.getElementById('hero-dots');
 
-    CAROUSEL_IMAGES.forEach((imgSrc, i) => {
+    FUNGI_DATA.forEach((item, i) => {
         const slide = document.createElement('div');
         slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
         const img = document.createElement('img');
-        img.src   = imgSrc;
+        img.src   = item.img;
         img.alt   = '';   // purely decorative
         img.setAttribute('aria-hidden', 'true');
         img.className = 'w-full h-full object-cover';
-        img.loading = i === 0 ? 'eager' : 'lazy';  // first image loads immediately
+        img.loading = 'lazy';
         slide.appendChild(img);
         wrap.insertBefore(slide, dotsWrap);
 
@@ -1024,7 +1013,7 @@ function goToHeroSlide(index) {
 
 function resetHeroTimer() {
     clearInterval(heroTimer);
-    heroTimer = setInterval(() => goToHeroSlide((heroIndex + 1) % CAROUSEL_IMAGES.length), 4500);
+    heroTimer = setInterval(() => goToHeroSlide((heroIndex + 1) % FUNGI_DATA.length), 4500);
 }
 
 /* ─── NAVIGATION ──────────────────────────────────── */
@@ -1209,7 +1198,7 @@ function renderHistory() {
     });
 }
 
-/* ─── FILE HANDLING ─────���─────────────────────────── */
+/* ─── FILE HANDLING ───────────────────────────────── */
 const elFileInput = document.getElementById('file-input');
 let currentFile   = null;
 
@@ -1461,7 +1450,7 @@ function showToast(msg, isError = false) {
     }, 2800);
 }
 
-/* ─── INIT ───────────────────────────���────────────── */
+/* ─── INIT ────────────────────────────────────────── */
 buildHeroCarousel();
 resetHeroTimer();
 updateScanCounter();
