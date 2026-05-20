@@ -1170,14 +1170,28 @@ function toggleUserType() {
     persistAccountState(); // Guardar cambio en localStorage
     updateAccountUI();
     updateScanCounter();
+    // Forzar desbloqueo inmediato si es PRO
+    if (userProfile.isPro) {
+        const zone = document.getElementById('upload-zone');
+        if (zone) {
+            zone.classList.remove('locked');
+            zone.title = '';
+        }
+    }
 }
 
 function activatePro() {
     userProfile.isPro = true;
     persistAccountState(); // Guardar estado PRO en localStorage
+    // Desbloquear uploader inmediatamente
+    const zone = document.getElementById('upload-zone');
+    if (zone) {
+        zone.classList.remove('locked');
+        zone.title = '';
+    }
     updateScanCounter();
     if (isLoggedIn) updateAccountUI();
-    showToast('¡Plan Pro activado! Análisis ilimitados.');
+    showToast('Plan Pro activado. Analisis ilimitados.');
     switchView('lab');
 }
 
@@ -1327,7 +1341,7 @@ function resetApp() {
 document.getElementById('btn-analyze').addEventListener('click', async () => {
     // Guard: check remaining scans
     if (!userProfile.isPro && getRemainingScans() <= 0) {
-        openPaywallModal();
+        handleLockedUploader();
         return;
     }
 
