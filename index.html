@@ -1032,10 +1032,13 @@ function updateScanCounter() {
 }
 
 function resetDemo() {
+    // Reiniciar contador del usuario actual (logueado o invitado)
     const key = isLoggedIn ? getUserStorageKey('scanUsage') : GUEST_USAGE_KEY;
     localStorage.removeItem(key);
+    // Tambien reiniciar contador de invitados siempre
+    localStorage.removeItem(GUEST_USAGE_KEY);
     updateScanCounter();
-    showToast('Demo reiniciada — 3 análisis disponibles');
+    showToast('Demo reiniciada — 3 analisis disponibles');
 }
 
 /* ─── FUNGI DATA ──────────────────────────────────── */
@@ -1105,6 +1108,12 @@ function resetHeroTimer() {
 
 /* ─── NAVIGATION ────────��─────────────────────────── */
 function switchView(view) {
+    // Si es invitado e intenta ir a Planes, mostrar modal de auth
+    if (view === 'planes' && !isLoggedIn) {
+        document.getElementById('modal-guest-limit').classList.add('open');
+        document.body.style.overflow = 'hidden';
+        return;
+    }
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + view).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-[var(--primary)]', 'font-bold'));
