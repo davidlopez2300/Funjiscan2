@@ -1108,12 +1108,6 @@ function resetHeroTimer() {
 
 /* ─── NAVIGATION ────────��─────────────────────────── */
 function switchView(view) {
-    // Si es invitado e intenta ir a Planes, mostrar modal de auth
-    if (view === 'planes' && !isLoggedIn) {
-        document.getElementById('modal-guest-limit').classList.add('open');
-        document.body.style.overflow = 'hidden';
-        return;
-    }
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + view).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-[var(--primary)]', 'font-bold'));
