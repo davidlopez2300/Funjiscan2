@@ -170,16 +170,7 @@
             border-color: var(--primary);
         }
 
-        /* ─── HISTORY CARD ────────────────────────── */
-        .hist-card {
-            background: rgba(255,255,255,.03);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            transition: background .2s, border-color .2s;
-        }
-        .hist-card:hover { background: rgba(255,255,255,.06); border-color: var(--primary); }
-
-        /* ─── LOADING SPINNER ─────────────────────── */
+        /* ─── SCROLLBAR ───────────────────────────── */
         .spinner {
             width: 64px; height: 64px;
             border: 3px solid rgba(90,176,88,.2);
@@ -301,7 +292,33 @@
         /* ─── PULSE DOT ───────────────────────────── */
         .dot-pulse { animation: pulse-ring 2s ease infinite; }
 
-        /* ─── SCROLLBAR ───────────────────────────── */
+        /* ─── AUTH TABS ───────────────────────────── */
+        .auth-tab {
+            transition: background .25s, color .25s;
+        }
+        .auth-form {
+            animation: fadeUp .35s cubic-bezier(.22,1,.36,1) both;
+        }
+
+        /* ─── HISTORY CARDS ───────────────────────── */
+        .hist-card {
+            background: rgba(255,255,255,.03);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            transition: background .2s, border-color .2s;
+        }
+        .hist-card:hover { background: rgba(255,255,255,.06); border-color: var(--primary); }
+
+        /* ─── LOADING SPINNER ─────────────────────── */
+        .spinner {
+            width: 64px; height: 64px;
+            border: 3px solid rgba(90,176,88,.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin-slow .9s linear infinite;
+        }
+
+        /* ─── SCROLLBAR (first) ───────────────────── */
         ::-webkit-scrollbar       { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -340,10 +357,11 @@
     <div class="ticker-inner text-[11px] font-mono text-[var(--muted)] uppercase tracking-[.18em] select-none">
         <span class="mr-10">✦ Identificación micológica asistida por IA</span>
         <span class="mr-10">✦ No consumir sin verificación de expertos</span>
-        <span class="mr-10">✦ No manipular sin verificacion de expertos</span>
+        <span class="mr-10">✦ Modelo entrenado con + de 30 especies</span>
+        <span class="mr-10">✦ Conectado a Google Colab backend</span>
         <span class="mr-10">✦ Identificación micológica asistida por IA</span>
         <span class="mr-10">✦ No consumir sin verificación de expertos</span>
-        <span class="mr-10">✦ No manipular sin verificacion de expertos</span>
+        <span class="mr-10">✦ Modelo entrenado con + de 30 especies</span>
         <span class="mr-10">✦ Conectado a Google Colab backend</span>
     </div>
 </div>
@@ -352,6 +370,20 @@
      VIEW — LABORATORIO
 ══════════════════════════════════════════ -->
 <main id="view-lab" class="view active w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-40 pb-24">
+
+    <!-- ── Galería de Hongos ─────────────────── -->
+    <section class="space-y-10 mb-20">
+        <div class="anim-fade-up flex items-end justify-between border-b border-[var(--border)] pb-5">
+            <div>
+                <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-1">Referencia micológica</p>
+                <h2 class="font-display text-4xl md:text-5xl font-black">Galería de Especies</h2>
+            </div>
+            <span class="text-[var(--muted)] text-xs hidden md:block">Haz clic para ver detalles</span>
+        </div>
+        <div id="fungi-grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+            <!-- JS renders cards here -->
+        </div>
+    </section>
 
     <!-- ── SAFETY ALERT BANNER ─────────────────────── -->
     <div class="anim-fade-up mb-10 safety-alert rounded-2xl border border-amber-500/40 bg-amber-950/30 p-5 flex gap-4 items-start"
@@ -511,38 +543,116 @@
             </div>
         </div>
     </div>
-
-    <!-- ── Galería de Hongos ─────────────────── -->
-    <section class="space-y-10">
-        <div class="anim-fade-up flex items-end justify-between border-b border-[var(--border)] pb-5">
-            <div>
-                <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-1">Referencia micológica</p>
-                <h2 class="font-display text-4xl md:text-5xl font-black">Galería de Especies</h2>
-            </div>
-            <span class="text-[var(--muted)] text-xs hidden md:block">Haz clic para ver detalles</span>
-        </div>
-
-        <div id="fungi-grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
-            <!-- JS renders cards here -->
-        </div>
-    </section>
 </main>
 
 <!-- ══════════════════════════════════════
      VIEW — CUENTA
 ══════════════════════════════════════════ -->
 <main id="view-account" class="view w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-40 pb-24">
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+
+    <!-- ─── AUTH WALL (shown when logged out) ──────── -->
+    <div id="auth-wall" class="max-w-md mx-auto">
+        <div class="card p-8">
+
+            <!-- Logo mark -->
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-14 h-14 rounded-2xl bg-[var(--primary)]/15 border border-[var(--border)] flex items-center justify-center mb-4">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <h2 class="font-display text-3xl font-black text-balance text-center">Accede a tu cuenta</h2>
+                <p class="text-[var(--muted)] text-sm text-center mt-1.5">Inicia sesión o crea una cuenta gratuita</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex gap-1 glass rounded-2xl p-1 mb-7 border border-[var(--border)]" role="tablist">
+                <button id="tab-login-btn"
+                        role="tab" aria-selected="true"
+                        onclick="switchAuthTab('login')"
+                        class="auth-tab flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-[var(--primary)] text-black">
+                    Iniciar Sesión
+                </button>
+                <button id="tab-register-btn"
+                        role="tab" aria-selected="false"
+                        onclick="switchAuthTab('register')"
+                        class="auth-tab flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-[var(--muted)] hover:text-[var(--text)]">
+                    Registrarse
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="tab-login" onsubmit="event.preventDefault(); handleLogin();" class="auth-form space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Correo Electrónico</label>
+                    <input id="login-email" type="email" class="field" placeholder="correo@ejemplo.com" autocomplete="email" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Contraseña</label>
+                    <div class="relative">
+                        <input id="login-password" type="password" class="field pr-11" placeholder="••••••••" autocomplete="current-password" required>
+                        <button type="button" onclick="togglePassword('login-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary w-full py-4 text-sm mt-2 shadow-[0_0_32px_rgba(90,176,88,.2)]">
+                    Iniciar Sesión
+                </button>
+                <p class="text-center text-xs text-[var(--muted)] pt-1">
+                    ¿No tienes cuenta?
+                    <button type="button" onclick="switchAuthTab('register')" class="text-[var(--primary-lt)] font-semibold hover:underline">Regístrate gratis</button>
+                </p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="tab-register" onsubmit="event.preventDefault(); handleRegister();" class="auth-form hidden space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Nombre Completo</label>
+                    <input id="reg-name" type="text" class="field" placeholder="Tu nombre completo" autocomplete="name" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Correo Electrónico</label>
+                    <input id="reg-email" type="email" class="field" placeholder="correo@ejemplo.com" autocomplete="email" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Contraseña</label>
+                    <div class="relative">
+                        <input id="reg-password" type="password" class="field pr-11" placeholder="Mínimo 6 caracteres" autocomplete="new-password" minlength="6" required>
+                        <button type="button" onclick="togglePassword('reg-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary w-full py-4 text-sm mt-2 shadow-[0_0_32px_rgba(90,176,88,.2)]">
+                    Crear Cuenta
+                </button>
+                <p class="text-center text-xs text-[var(--muted)] pt-1">
+                    ¿Ya tienes cuenta?
+                    <button type="button" onclick="switchAuthTab('login')" class="text-[var(--primary-lt)] font-semibold hover:underline">Inicia sesión</button>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ─── LOGGED-IN DASHBOARD ──────────────────────── -->
+    <div id="account-dashboard" class="hidden grid grid-cols-1 lg:grid-cols-5 gap-8">
 
         <!-- Profile Panel -->
         <div class="lg:col-span-2 space-y-6 anim-fade-up">
             <div class="card p-8">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-xl font-bold">Mi Perfil</h2>
-                    <button onclick="toggleUserType()"
-                            class="text-[11px] glass px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
-                        Toggle Pro / Free
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="toggleUserType()"
+                                class="text-[11px] glass px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
+                            Toggle Pro / Free
+                        </button>
+                        <button onclick="handleLogout()"
+                                class="text-[11px] glass px-3 py-1.5 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all">
+                            Cerrar sesión
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex flex-col items-center mb-8">
@@ -573,33 +683,72 @@
             </div>
         </div>
 
-        <!-- History / Upgrade Panel -->
+        <!-- History Panel -->
         <div class="lg:col-span-3 anim-fade-up delay-2">
-            <div class="card p-8 min-h-[500px] flex flex-col h-full">
+            <div class="card p-8 flex flex-col" style="min-height: 520px;">
 
-                <!-- PRO: historial -->
-                <div id="pro-content" class="hidden flex-grow flex flex-col gap-5">
-                    <div class="flex items-center justify-between mb-2">
-                        <h2 class="text-xl font-bold">Historial de Hallazgos</h2>
-                        <span class="text-[11px] bg-[var(--primary)] text-black px-3 py-1 rounded-full font-black uppercase">Pro Activo</span>
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-0.5">Registro personal</p>
+                        <h2 class="text-xl font-bold">Historial de Análisis</h2>
                     </div>
-                    <div id="history-list" class="flex-grow space-y-3 max-h-[520px] overflow-y-auto pr-1"></div>
+                    <span id="history-pro-badge" class="hidden text-[11px] bg-[var(--primary)] text-black px-3 py-1 rounded-full font-black uppercase tracking-widest">Pro Activo</span>
                 </div>
 
-                <!-- FREE: upgrade CTA -->
-                <div id="free-content" class="flex-grow flex flex-col items-center justify-center text-center gap-6 py-6">
-                    <div class="w-20 h-20 rounded-2xl bg-[var(--primary)]/10 flex items-center justify-center text-4xl anim-float">💎</div>
-                    <div>
-                        <h2 class="font-display text-4xl font-black mb-3 text-balance">
-                            Desbloquea el<br><span class="text-[var(--primary-lt)]">Potencial Completo</span>
-                        </h2>
-                        <p class="text-[var(--muted)] max-w-sm mx-auto leading-relaxed">
-                            Guarda tus hallazgos, accede al historial completo y desbloquea análisis ilimitados con la versión Pro.
-                        </p>
+                <!-- PRO: history list -->
+                <div id="pro-content" class="hidden flex-grow flex flex-col gap-3 relative">
+                    <div id="history-list" class="flex-grow space-y-2.5 max-h-[420px] overflow-y-auto pr-1"></div>
+                    <p id="history-empty" class="hidden text-[var(--muted)] italic text-sm text-center py-12">
+                        Aún no hay análisis registrados. Realiza un escaneo en el Laboratorio para comenzar.
+                    </p>
+                </div>
+
+                <!-- FREE: blurred pro-wall overlay -->
+                <div id="free-content" class="flex-grow relative rounded-[var(--radius-lg)] overflow-hidden">
+                    <!-- blurred preview -->
+                    <div class="space-y-2.5 pointer-events-none select-none" aria-hidden="true">
+                        <div class="hist-card flex items-center gap-4 p-4 opacity-60">
+                            <div class="w-10 h-10 rounded-xl bg-[var(--primary)]/15 shrink-0"></div>
+                            <div class="flex-grow space-y-1.5">
+                                <div class="h-3 bg-white/10 rounded-full w-32"></div>
+                                <div class="h-2.5 bg-white/6 rounded-full w-20"></div>
+                            </div>
+                            <div class="w-16 h-5 bg-[var(--primary)]/15 rounded-full shrink-0"></div>
+                        </div>
+                        <div class="hist-card flex items-center gap-4 p-4 opacity-40">
+                            <div class="w-10 h-10 rounded-xl bg-red-500/15 shrink-0"></div>
+                            <div class="flex-grow space-y-1.5">
+                                <div class="h-3 bg-white/10 rounded-full w-28"></div>
+                                <div class="h-2.5 bg-white/6 rounded-full w-24"></div>
+                            </div>
+                            <div class="w-16 h-5 bg-red-500/15 rounded-full shrink-0"></div>
+                        </div>
+                        <div class="hist-card flex items-center gap-4 p-4 opacity-20">
+                            <div class="w-10 h-10 rounded-xl bg-white/5 shrink-0"></div>
+                            <div class="flex-grow space-y-1.5">
+                                <div class="h-3 bg-white/10 rounded-full w-36"></div>
+                                <div class="h-2.5 bg-white/6 rounded-full w-16"></div>
+                            </div>
+                            <div class="w-16 h-5 bg-white/10 rounded-full shrink-0"></div>
+                        </div>
                     </div>
-                    <button class="btn-primary px-10 py-4 text-base shadow-[0_0_50px_rgba(90,176,88,.25)]">
-                        Adquirir Versión Pro
-                    </button>
+                    <!-- blur overlay -->
+                    <div class="absolute inset-0 backdrop-blur-md bg-[var(--bg)]/60 flex flex-col items-center justify-center text-center gap-5 p-8">
+                        <div class="w-16 h-16 rounded-2xl bg-[var(--primary)]/10 border border-[var(--border)] flex items-center justify-center">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-display text-2xl font-black mb-2 text-balance">Función exclusiva Pro</h3>
+                            <p class="text-[var(--muted)] text-sm leading-relaxed max-w-xs mx-auto">
+                                Guarda cada análisis con fecha, hora e indicador de toxicidad. Accede a tu historial completo con la membresía Pro.
+                            </p>
+                        </div>
+                        <button onclick="toggleUserType()" class="btn-primary px-8 py-3.5 text-sm shadow-[0_0_40px_rgba(90,176,88,.2)]">
+                            Mejorar a Pro
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -848,6 +997,78 @@ window.addEventListener('scroll', () => {
     document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
 });
 
+/* ─── AUTH STATE ──────────────────────────────────── */
+let isLoggedIn = false;
+
+function switchAuthTab(tab) {
+    const loginBtn = document.getElementById('tab-login-btn');
+    const regBtn   = document.getElementById('tab-register-btn');
+    const loginForm = document.getElementById('tab-login');
+    const regForm   = document.getElementById('tab-register');
+
+    if (tab === 'login') {
+        loginBtn.classList.add('bg-[var(--primary)]', 'text-black');
+        loginBtn.classList.remove('text-[var(--muted)]', 'hover:text-[var(--text)]');
+        regBtn.classList.remove('bg-[var(--primary)]', 'text-black');
+        regBtn.classList.add('text-[var(--muted)]', 'hover:text-[var(--text)]');
+        loginForm.classList.remove('hidden');
+        regForm.classList.add('hidden');
+    } else {
+        regBtn.classList.add('bg-[var(--primary)]', 'text-black');
+        regBtn.classList.remove('text-[var(--muted)]', 'hover:text-[var(--text)]');
+        loginBtn.classList.remove('bg-[var(--primary)]', 'text-black');
+        loginBtn.classList.add('text-[var(--muted)]', 'hover:text-[var(--text)]');
+        regForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+    }
+}
+
+function handleLogin() {
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!email || !password) return;
+
+    // Simulate login — in production this would call a real API
+    userProfile.email = email;
+    userProfile.name  = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    isLoggedIn = true;
+    showDashboard();
+    showToast('Bienvenido, ' + userProfile.name);
+}
+
+function handleRegister() {
+    const name     = document.getElementById('reg-name').value.trim();
+    const email    = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    if (!name || !email || !password) return;
+
+    userProfile.name  = name;
+    userProfile.email = email;
+    isLoggedIn = true;
+    showDashboard();
+    showToast('Cuenta creada. ¡Bienvenido, ' + name + '!');
+}
+
+function handleLogout() {
+    isLoggedIn = false;
+    document.getElementById('auth-wall').classList.remove('hidden');
+    document.getElementById('account-dashboard').classList.add('hidden');
+    document.getElementById('account-dashboard').classList.remove('grid');
+    showToast('Sesión cerrada correctamente');
+}
+
+function showDashboard() {
+    document.getElementById('auth-wall').classList.add('hidden');
+    document.getElementById('account-dashboard').classList.remove('hidden');
+    document.getElementById('account-dashboard').classList.add('grid');
+    updateAccountUI();
+}
+
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
 /* ─── PROFILE ─────────────────────────────────────── */
 function toggleUserType() {
     userProfile.isPro = !userProfile.isPro;
@@ -867,10 +1088,18 @@ function updateAccountUI() {
     const displayName   = document.getElementById('display-name');
     const proContent    = document.getElementById('pro-content');
     const freeContent   = document.getElementById('free-content');
+    const histBadge     = document.getElementById('history-pro-badge');
+
+    if (!displayName) return;
 
     displayName.textContent = userProfile.name;
     document.getElementById('input-name').value  = userProfile.name;
     document.getElementById('input-email').value = userProfile.email;
+
+    // Update avatar
+    const photo = document.getElementById('user-photo');
+    const initials = encodeURIComponent(userProfile.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'U');
+    photo.src = `https://ui-avatars.com/api/?name=${initials}&background=5ab058&color=071209&size=256`;
 
     if (userProfile.isPro) {
         badge.textContent = 'Pro';
@@ -879,6 +1108,7 @@ function updateAccountUI() {
         displayStatus.className   = 'text-[11px] font-mono text-[var(--primary)] mt-1 uppercase tracking-widest';
         proContent.classList.remove('hidden');
         freeContent.classList.add('hidden');
+        histBadge.classList.remove('hidden');
         renderHistory();
     } else {
         badge.textContent = 'Free';
@@ -887,32 +1117,45 @@ function updateAccountUI() {
         displayStatus.className   = 'text-[11px] font-mono text-[var(--muted)] mt-1 uppercase tracking-widest';
         proContent.classList.add('hidden');
         freeContent.classList.remove('hidden');
+        histBadge.classList.add('hidden');
     }
 }
 
 function renderHistory() {
-    const list = document.getElementById('history-list');
+    const list  = document.getElementById('history-list');
+    const empty = document.getElementById('history-empty');
     if (!analysisHistory.length) {
-        list.innerHTML = '<p class="text-[var(--muted)] italic text-sm text-center py-8">No hay análisis previos…</p>';
+        list.classList.add('hidden');
+        empty.classList.remove('hidden');
         return;
     }
+    empty.classList.add('hidden');
+    list.classList.remove('hidden');
     list.innerHTML = '';
     [...analysisHistory].reverse().forEach(item => {
+        const isPoison = item.type === 'VENENOSO';
         const card = document.createElement('div');
         card.className = 'hist-card flex items-center gap-4 p-4';
         card.innerHTML = `
-            <div class="w-10 h-10 rounded-xl ${item.type === 'VENENOSO' ? 'bg-red-500/15' : 'bg-[var(--primary)]/15'} flex items-center justify-center text-xl shrink-0">
-                ${item.icon}
+            <div class="w-10 h-10 rounded-xl ${isPoison ? 'bg-red-500/15' : 'bg-[var(--primary)]/15'} flex items-center justify-center shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${isPoison ? '#f87171' : '#86d984'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    ${isPoison
+                        ? '<circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>'
+                        : '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'}
+                </svg>
             </div>
             <div class="flex-grow min-w-0">
                 <p class="font-semibold text-sm truncate">${item.name}</p>
-                <p class="text-[11px] text-[var(--muted)] font-mono uppercase tracking-wider">${item.date}</p>
+                <p class="text-[11px] text-[var(--muted)] font-mono">${item.date}</p>
             </div>
-            <div class="text-right shrink-0">
-                <span class="block text-[11px] font-black px-2 py-0.5 rounded-full ${item.type === 'VENENOSO' ? 'bg-red-500/15 text-red-400' : 'bg-[var(--primary)]/15 text-[var(--primary-lt)]'}">
-                    ${item.type}
+            <div class="text-right shrink-0 space-y-1">
+                <span class="block text-[10px] font-black px-2.5 py-1 rounded-full border
+                    ${isPoison
+                        ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                        : 'bg-[var(--primary)]/10 border-[var(--primary)]/30 text-[var(--primary-lt)]'}">
+                    ${isPoison ? 'No seguro' : 'Seguro'}
                 </span>
-                <p class="text-[10px] text-[var(--muted)] mt-1">${Math.round(item.conf * 100)}% conf.</p>
+                <p class="text-[10px] text-[var(--muted)] font-mono">${Math.round(item.conf * 100)}% conf.</p>
             </div>
         `;
         list.appendChild(card);
@@ -983,12 +1226,12 @@ document.getElementById('btn-analyze').addEventListener('click', async () => {
         showResult(data);
 
         if (userProfile.isPro) {
+            const now = new Date();
             analysisHistory.push({
                 name: data.nombre_comun,
                 type: data.prediccion,
                 conf: data.confianza,
-                icon: data.prediccion === 'VENENOSO' ? '☠️' : '🍄',
-                date: new Date().toLocaleDateString('es-CO')
+                date: now.toLocaleDateString('es-CO') + ' · ' + now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
             });
             localStorage.setItem('fungiHistory', JSON.stringify(analysisHistory));
         }
@@ -1066,7 +1309,6 @@ function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
 
 /* ─── INIT ────────────────────────────────────────── */
-updateAccountUI();
 renderGallery();
 buildCarousel();
 resetCarouselTimer();
