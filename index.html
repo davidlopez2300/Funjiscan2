@@ -921,11 +921,11 @@ function restoreAccountState() {
 
 /* ─── FREE PLAN LIMITER (vinculado por usuario) ──── */
 const FREE_LIMIT = 3;
+const GUEST_USAGE_KEY = 'fungi_guest_scanUsage';
 
 function getUsageData() {
-    // Si no hay sesión iniciada, no hay límite activo — devuelve contador vacío sin persistir
-    if (!isLoggedIn) return { count: 0, resetAt: Date.now() + 24 * 60 * 60 * 1000 };
-    const key  = getUserStorageKey('scanUsage');
+    // Usuarios invitados también tienen límite, guardado en clave 'guest'
+    const key  = isLoggedIn ? getUserStorageKey('scanUsage') : GUEST_USAGE_KEY;
     const raw  = localStorage.getItem(key);
     const data = raw ? JSON.parse(raw) : { count: 0, resetAt: 0 };
     const now  = Date.now();
@@ -937,8 +937,7 @@ function getUsageData() {
 }
 
 function saveUsageData(data) {
-    if (!isLoggedIn) return; // Solo persiste si hay sesión
-    const key = getUserStorageKey('scanUsage');
+    const key = isLoggedIn ? getUserStorageKey('scanUsage') : GUEST_USAGE_KEY;
     localStorage.setItem(key, JSON.stringify(data));
 }
 
@@ -956,8 +955,15 @@ function incrementUsage() {
 }
 
 function updateScanCounter() {
+  // Si es PRO, ocultar contador y desbloquear uploader inmediatamente
+  const zone = document.getElementById('upload-zone');
   if (userProfile.isPro) {
       document.getElementById('scan-counter-wrap').style.display = 'none';
+      // Desbloquear uploader de forma reactiva
+      if (zone) {
+          zone.classList.remove('locked');
+          zone.title = '';
+      }
       return;
   }
   document.getElementById('scan-counter-wrap').style.display = '';
@@ -977,7 +983,6 @@ function updateScanCounter() {
   }
 
   // Bloquear/desbloquear uploader
-  const zone = document.getElementById('upload-zone');
   if (remaining === 0) {
       zone.classList.add('locked');
       zone.title = 'Límite diario alcanzado — Mejora a Pro';
@@ -988,9 +993,8 @@ function updateScanCounter() {
 }
 
 function resetDemo() {
-    if (isLoggedIn) {
-        localStorage.removeItem(getUserStorageKey('scanUsage'));
-    }
+    const key = isLoggedIn ? getUserStorageKey('scanUsage') : GUEST_USAGE_KEY;
+    localStorage.removeItem(key);
     updateScanCounter();
     showToast('Demo reiniciada — 3 análisis disponibles');
 }
@@ -1060,7 +1064,7 @@ function resetHeroTimer() {
     heroTimer = setInterval(() => goToHeroSlide((heroIndex + 1) % HERO_IMGS.length), 4500);
 }
 
-/* ─── NAVIGATION ──────────────────────────────────── */
+/* ─── NAVIGATION ────────��─────────────────────────── */
 function switchView(view) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + view).classList.add('active');
@@ -1267,7 +1271,7 @@ let currentFile   = null;
 
 document.getElementById('upload-zone').addEventListener('click', () => {
     if (document.getElementById('upload-zone').classList.contains('locked')) {
-        openPaywallModal();
+        handleLockedUploader();
         return;
     }
     elFileInput.click();
@@ -1288,7 +1292,7 @@ document.getElementById('upload-zone').addEventListener('drop', e => {
     e.preventDefault();
     document.getElementById('upload-zone').style.borderColor = '';
     if (document.getElementById('upload-zone').classList.contains('locked')) {
-        openPaywallModal(); return;
+        handleLockedUploader(); return;
     }
     const f = e.dataTransfer.files[0];
     if (f && f.type.startsWith('image/')) handleFile(f);
@@ -1482,6 +1486,26 @@ function closePaywallAndGoToPlanes() {
             }
         }, 80);
     });
+}
+
+/* ─── LOCKED UPLOADER HANDLER ─────────────────────── */
+function handleLockedUploader() {
+    // Si el usuario NO ha iniciado sesión, redirigir a Mi Cuenta
+    if (!isLoggedIn) {
+        switchView('cuenta');
+        showToast('Inicia sesión o regístrate para continuar');
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                const authSection = document.getElementById('view-cuenta');
+                if (authSection) {
+                    authSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 80);
+        });
+        return;
+    }
+    // Si ya está logueado pero agotó usos, mostrar paywall
+    openPaywallModal();
 }
 
 /* ─── KEYBOARD CLOSE ──────────────────────────────── */
