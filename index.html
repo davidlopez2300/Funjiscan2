@@ -4,32 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FungiScan — Identificación Micológica</title>
+    <meta name="description" content="Identifica hongos con inteligencia artificial. Herramienta educativa de micología.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ─── TOKENS ─────────────────────────────── */
+        /* ─── DESIGN TOKENS ─────────────────────────── */
         :root {
             --bg:          #0b1a0d;
             --surface:     #111f13;
             --panel:       rgba(255,255,255,0.035);
-            --border:      rgba(88,176,88,0.18);
+            --border:      rgba(90,176,88,0.18);
             --primary:     #5ab058;
             --primary-lt:  #86d984;
             --danger:      #e05555;
             --text:        #dff0e0;
             --muted:       #7a9e7c;
-            --earth:       #8c6e3f;
             --radius-xl:   2.5rem;
             --radius-lg:   1.5rem;
             --radius-md:   1rem;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
-
         html { background: var(--bg); }
-
         body {
             background: var(--bg);
             color: var(--text);
@@ -41,288 +39,219 @@
         /* ─── TYPOGRAPHY ──────────────────────────── */
         .font-display { font-family: 'Playfair Display', serif; }
 
-        /* ─── ANIMATIONS ──────────────────────────── */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(28px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(.94); }
-            to   { opacity: 1; transform: scale(1); }
-        }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-14px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes spin-slow {
-            to { transform: rotate(360deg); }
-        }
-        @keyframes pulse-ring {
-            0%   { box-shadow: 0 0 0 0 rgba(90,176,88,0.45); }
-            70%  { box-shadow: 0 0 0 18px rgba(90,176,88,0); }
-            100% { box-shadow: 0 0 0 0 rgba(90,176,88,0); }
-        }
-        @keyframes bar-grow {
-            from { width: 0; }
+        /* ─── KEYFRAMES ───────────────────────────── */
+        @keyframes fadeUp   { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+        @keyframes scaleIn  { from { opacity:0; transform:scale(.93); } to { opacity:1; transform:scale(1); } }
+        @keyframes slideDown{ from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes spinAnim { to   { transform:rotate(360deg); } }
+        @keyframes pulseRing {
+            0%   { box-shadow:0 0 0 0 rgba(90,176,88,.45); }
+            70%  { box-shadow:0 0 0 18px rgba(90,176,88,0); }
+            100% { box-shadow:0 0 0 0 rgba(90,176,88,0); }
         }
         @keyframes shimmer {
-            from { background-position: -400px 0; }
+            from { background-position:-400px 0; }
             to   { background-position: 400px 0; }
         }
-        @keyframes floatUp {
-            0%,100% { transform: translateY(0px); }
-            50%     { transform: translateY(-10px); }
+        @keyframes floatUp  { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+        @keyframes ticker   { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+        @keyframes barGrow  { from { width:0; } }
+        @keyframes alertPulse {
+            0%,100% { box-shadow:0 0 0 0 rgba(245,158,11,.18); }
+            50%     { box-shadow:0 0 0 8px rgba(245,158,11,0); }
         }
-        @keyframes ticker {
-            0%   { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        @keyframes carousel-fade-in {
-            from { opacity: 0; transform: scale(1.04); }
-            to   { opacity: 1; transform: scale(1); }
-        }
-        @keyframes alert-pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.2); }
-            50%       { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
-        }
-        @keyframes spinner-overlay {
-            to { transform: rotate(360deg); }
+        @keyframes heroPan  {
+            0%   { transform:scale(1.06) translateX(0%); }
+            50%  { transform:scale(1.06) translateX(-3%); }
+            100% { transform:scale(1.06) translateX(0%); }
         }
 
-        .anim-fade-up   { animation: fadeUp .65s cubic-bezier(.22,1,.36,1) both; }
-        .anim-fade-in   { animation: fadeIn .5s ease both; }
-        .anim-scale-in  { animation: scaleIn .5s cubic-bezier(.22,1,.36,1) both; }
-        .anim-slide-down{ animation: slideDown .4s cubic-bezier(.22,1,.36,1) both; }
-        .anim-float     { animation: floatUp 3s ease-in-out infinite; }
+        /* ─── UTILITY ANIMATIONS ──────────────────── */
+        .anim-fade-up    { animation:fadeUp    .65s cubic-bezier(.22,1,.36,1) both; }
+        .anim-fade-in    { animation:fadeIn    .5s ease both; }
+        .anim-scale-in   { animation:scaleIn   .5s cubic-bezier(.22,1,.36,1) both; }
+        .anim-slide-down { animation:slideDown .4s cubic-bezier(.22,1,.36,1) both; }
+        .anim-float      { animation:floatUp   3s ease-in-out infinite; }
+        .delay-1 { animation-delay:.1s; }
+        .delay-2 { animation-delay:.2s; }
+        .delay-3 { animation-delay:.3s; }
+        .delay-4 { animation-delay:.4s; }
+        .delay-5 { animation-delay:.55s; }
 
-        .delay-1 { animation-delay: .1s; }
-        .delay-2 { animation-delay: .2s; }
-        .delay-3 { animation-delay: .3s; }
-        .delay-4 { animation-delay: .4s; }
-        .delay-5 { animation-delay: .55s; }
-
-        /* ─── GLASS PANELS ────────────────────────── */
+        /* ─── GLASS ───────────────────────────────── */
         .glass {
-            background: var(--panel);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid var(--border);
+            background:var(--panel);
+            backdrop-filter:blur(18px);
+            -webkit-backdrop-filter:blur(18px);
         }
 
         /* ─── NAV ─────────────────────────────────── */
-        nav {
-            transition: background .3s, border-color .3s;
-        }
+        nav { transition:background .3s, border-color .3s; }
         nav.scrolled {
-            background: rgba(11,26,13,.92) !important;
-            border-bottom-color: rgba(88,176,88,.25) !important;
-        }
-
-        /* ─── UPLOAD ZONE ─────────────────────────── */
-        #upload-zone {
-            transition: border-color .3s, background .3s, transform .2s;
-        }
-        #upload-zone:hover {
-            border-color: var(--primary);
-            background: rgba(90,176,88,.05);
-        }
-        #upload-zone:active {
-            transform: scale(.99);
+            background:rgba(11,26,13,.92) !important;
+            border-bottom-color:rgba(90,176,88,.25) !important;
         }
 
         /* ─── BUTTONS ─────────────────────────────── */
         .btn-primary {
-            background: var(--primary);
-            color: #071209;
-            font-weight: 700;
-            border-radius: 999px;
-            cursor: pointer;
-            transition: background .2s, transform .15s, box-shadow .2s;
+            background:var(--primary); color:#071209; font-weight:700;
+            border-radius:999px; cursor:pointer;
+            transition:background .2s, transform .15s, box-shadow .2s;
         }
-        .btn-primary:hover  { background: var(--primary-lt); box-shadow: 0 0 28px rgba(90,176,88,.35); }
-        .btn-primary:active { transform: scale(.97); }
-
+        .btn-primary:hover  { background:var(--primary-lt); box-shadow:0 0 28px rgba(90,176,88,.35); }
+        .btn-primary:active { transform:scale(.97); }
+        .btn-primary:disabled {
+            background:rgba(90,176,88,.25); color:rgba(7,18,9,.5);
+            cursor:not-allowed; box-shadow:none; transform:none;
+        }
         .btn-ghost {
-            border: 1.5px solid var(--border);
-            color: var(--text);
-            background: transparent;
-            border-radius: 999px;
-            cursor: pointer;
-            transition: background .2s, border-color .2s, transform .15s;
+            border:1.5px solid var(--border); color:var(--text);
+            background:transparent; border-radius:999px; cursor:pointer;
+            transition:background .2s, border-color .2s, transform .15s;
         }
-        .btn-ghost:hover  { background: rgba(255,255,255,.06); border-color: var(--primary); }
-        .btn-ghost:active { transform: scale(.97); }
+        .btn-ghost:hover  { background:rgba(255,255,255,.06); border-color:var(--primary); }
+        .btn-ghost:active { transform:scale(.97); }
 
         /* ─── CARDS ───────────────────────────────── */
         .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-xl);
-            transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s, border-color .3s;
-        }
-        .card:hover {
-            transform: translateY(-6px) scale(1.012);
-            box-shadow: 0 24px 60px rgba(0,0,0,.45), 0 0 0 1px var(--primary);
-            border-color: var(--primary);
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:var(--radius-xl);
+            transition:transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s, border-color .3s;
         }
 
-        /* ─── SCROLLBAR ───────────────────────────── */
-        .spinner {
-            width: 64px; height: 64px;
-            border: 3px solid rgba(90,176,88,.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin-slow .9s linear infinite;
+        /* ─── INPUT ───────────────────────────────── */
+        .field {
+            background:rgba(0,0,0,.35);
+            border:1.5px solid var(--border);
+            color:var(--text); border-radius:var(--radius-md);
+            padding:.85rem 1.1rem; width:100%; font-size:.95rem;
+            transition:border-color .2s, box-shadow .2s;
         }
+        .field:focus {
+            outline:none; border-color:var(--primary);
+            box-shadow:0 0 0 3px rgba(90,176,88,.15);
+        }
+        .field::placeholder { color:var(--muted); }
 
         /* ─── SHIMMER ─────────────────────────────── */
         .shimmer {
-            background: linear-gradient(90deg, transparent 0%, rgba(90,176,88,.12) 50%, transparent 100%);
-            background-size: 400px 100%;
-            animation: shimmer 2s infinite;
+            background:linear-gradient(90deg,transparent 0%,rgba(90,176,88,.12) 50%,transparent 100%);
+            background-size:400px 100%;
+            animation:shimmer 2s infinite;
         }
 
         /* ─── TICKER ──────────────────────────────── */
-        .ticker-wrap { overflow: hidden; }
-        .ticker-inner {
-            display: flex;
-            width: max-content;
-            animation: ticker 28s linear infinite;
-        }
+        .ticker-wrap  { overflow:hidden; }
+        .ticker-inner { display:flex; width:max-content; animation:ticker 28s linear infinite; }
 
-        /* ─── MODAL ───────────────────────────────── */
-        #modal-overlay {
-            display: none;
-            position: fixed; inset: 0; z-index: 100;
-            background: rgba(0,0,0,.72);
-            backdrop-filter: blur(8px);
-            align-items: center; justify-content: center;
-            padding: 1.5rem;
+        /* ─── SPINNER ─────────────────────────────── */
+        .spinner {
+            width:48px; height:48px;
+            border:3px solid rgba(90,176,88,.2);
+            border-top-color:var(--primary);
+            border-radius:50%;
+            animation:spinAnim .85s linear infinite;
         }
-        #modal-overlay.open {
-            display: flex;
-            animation: fadeIn .25s ease both;
+        .spinner-sm {
+            width:36px; height:36px;
+            border:2.5px solid rgba(90,176,88,.2);
+            border-top-color:var(--primary);
+            border-radius:50%;
+            animation:spinAnim .8s linear infinite;
         }
-        #modal-box {
-            animation: scaleIn .35s cubic-bezier(.22,1,.36,1) both;
-            max-width: 540px; width: 100%;
-        }
-
-        /* ─── RESULT BAR ──────────────────────────── */
-        #result-bar { animation: bar-grow 1s cubic-bezier(.22,1,.36,1) forwards; }
-
-        /* ─── VIEW TRANSITION ─────────────────────── */
-        .view { display: none; opacity: 0; }
-        .view.active {
-            display: block;
-            animation: fadeIn .4s ease forwards;
-        }
-
-        /* ─── INPUT STYLE ─────────────────────────── */
-        .field {
-            background: rgba(0,0,0,.35);
-            border: 1.5px solid var(--border);
-            color: var(--text);
-            border-radius: var(--radius-md);
-            padding: .85rem 1.1rem;
-            width: 100%;
-            font-size: .95rem;
-            transition: border-color .2s, box-shadow .2s;
-        }
-        .field:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(90,176,88,.15);
-        }
-        .field::placeholder { color: var(--muted); }
-
-        /* ─── CAROUSEL ───────────────────────────── */
-        .carousel-slide {
-            position: absolute; inset: 0;
-            opacity: 0;
-            transition: opacity 1s ease;
-            pointer-events: none;
-        }
-        .carousel-slide.active {
-            opacity: 1;
-            animation: carousel-fade-in 1s cubic-bezier(.22,1,.36,1) both;
-        }
+        .dot-pulse { animation:pulseRing 2s ease infinite; }
 
         /* ─── SAFETY ALERT ────────────────────────── */
-        .safety-alert {
-            animation: alert-pulse 3s ease-in-out infinite;
-        }
+        .safety-alert { animation:alertPulse 3s ease-in-out infinite; }
 
-        /* ─── COMPACT UPLOADER ────────────────────── */
-        #upload-zone-compact {
-            transition: border-color .3s, background .3s, transform .2s;
+        /* ─── HERO CAROUSEL ───────────────────────── */
+        .hero-slide {
+            position:absolute; inset:0; opacity:0;
+            transition:opacity 1.2s ease;
+            pointer-events:none;
         }
-        #upload-zone-compact:hover {
-            border-color: var(--primary);
-            background: rgba(90,176,88,.05);
+        .hero-slide.active { opacity:1; }
+        .hero-slide img { animation:heroPan 12s ease-in-out infinite; }
+
+        /* ─── UPLOAD ZONE ─────────────────────────── */
+        #upload-zone {
+            transition:border-color .3s, background .3s, transform .2s;
         }
-        #upload-zone-compact:active { transform: scale(.99); }
+        #upload-zone:hover:not(.locked) {
+            border-color:var(--primary);
+            background:rgba(90,176,88,.05);
+        }
+        #upload-zone.locked {
+            cursor:not-allowed;
+            opacity:.55;
+            filter:saturate(0);
+        }
+        #upload-zone:active:not(.locked) { transform:scale(.99); }
 
         /* ─── LOADING OVERLAY (compact) ──────────── */
         #loading-zone-compact {
-            display: none;
-            position: absolute; inset: 0;
-            background: rgba(7,18,9,.82);
-            backdrop-filter: blur(6px);
-            border-radius: inherit;
-            z-index: 10;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
+            display:none; position:absolute; inset:0;
+            background:rgba(7,18,9,.82);
+            backdrop-filter:blur(6px);
+            border-radius:inherit; z-index:10;
+            flex-direction:column; align-items:center; justify-content:center; gap:1rem;
         }
-        #loading-zone-compact.visible { display: flex; }
-        .spinner-sm {
-            width: 40px; height: 40px;
-            border: 2.5px solid rgba(90,176,88,.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spinner-overlay .8s linear infinite;
-        }
+        #loading-zone-compact.visible { display:flex; }
 
-        /* ─── PULSE DOT ───────────────────────────── */
-        .dot-pulse { animation: pulse-ring 2s ease infinite; }
+        /* ─── RESULT BAR ──────────────────────────── */
+        #result-bar { animation:barGrow 1s cubic-bezier(.22,1,.36,1) forwards; }
+
+        /* ─── VIEW TRANSITIONS ────────────────────── */
+        .view { display:none; opacity:0; }
+        .view.active { display:block; animation:fadeIn .4s ease forwards; }
+
+        /* ─── MODAL ───────────────────────────────── */
+        .modal-overlay {
+            display:none; position:fixed; inset:0; z-index:100;
+            background:rgba(0,0,0,.75);
+            backdrop-filter:blur(10px);
+            -webkit-backdrop-filter:blur(10px);
+            align-items:center; justify-content:center; padding:1.5rem;
+        }
+        .modal-overlay.open { display:flex; animation:fadeIn .25s ease both; }
+        .modal-box { animation:scaleIn .38s cubic-bezier(.22,1,.36,1) both; }
 
         /* ─── AUTH TABS ───────────────────────────── */
-        .auth-tab {
-            transition: background .25s, color .25s;
-        }
-        .auth-form {
-            animation: fadeUp .35s cubic-bezier(.22,1,.36,1) both;
-        }
+        .auth-tab { transition:background .25s, color .25s; }
+        .auth-form { animation:fadeUp .35s cubic-bezier(.22,1,.36,1) both; }
 
         /* ─── HISTORY CARDS ───────────────────────── */
         .hist-card {
-            background: rgba(255,255,255,.03);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            transition: background .2s, border-color .2s;
+            background:rgba(255,255,255,.03);
+            border:1px solid var(--border);
+            border-radius:var(--radius-md);
+            transition:background .2s, border-color .2s;
         }
-        .hist-card:hover { background: rgba(255,255,255,.06); border-color: var(--primary); }
+        .hist-card:hover { background:rgba(255,255,255,.06); border-color:var(--primary); }
 
-        /* ─── LOADING SPINNER ─────────────────────── */
-        .spinner {
-            width: 64px; height: 64px;
-            border: 3px solid rgba(90,176,88,.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin-slow .9s linear infinite;
+        /* ─── PRICING CARDS ───────────────────────── */
+        .price-card {
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:var(--radius-xl);
+            transition:transform .3s, box-shadow .3s, border-color .3s;
+        }
+        .price-card:hover {
+            transform:translateY(-6px);
+            box-shadow:0 24px 64px rgba(0,0,0,.45);
+        }
+        .price-card.featured {
+            border-color:var(--primary);
+            box-shadow:0 0 0 1px var(--primary), 0 32px 80px rgba(90,176,88,.12);
         }
 
-        /* ─── SCROLLBAR (first) ───────────────────── */
-        ::-webkit-scrollbar       { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        /* ─── SCROLLBAR ───────────────────────────── */
+        ::-webkit-scrollbar       { width:6px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+        ::-webkit-scrollbar-thumb:hover { background:var(--primary); }
     </style>
 </head>
 <body>
@@ -332,14 +261,21 @@
 ══════════════════════════════════════════ -->
 <nav id="main-nav" class="fixed top-0 w-full glass z-50 px-6 md:px-10 py-4 flex justify-between items-center border-b border-transparent anim-slide-down">
     <button onclick="switchView('lab')" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center text-xl shadow-lg group-hover:scale-110 transition-transform">🍄</div>
+        <div class="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#071209" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" opacity=".2" fill="#071209"/>
+                <path d="M12 2c0 0-4 4-4 10h8c0-6-4-10-4-10z"/>
+                <line x1="12" y1="12" x2="12" y2="20"/>
+            </svg>
+        </div>
         <span class="font-display font-bold text-2xl text-[var(--primary-lt)] tracking-tight">FungiScan</span>
         <span id="nav-badge" class="ml-1 px-2.5 py-0.5 text-[11px] font-bold rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] uppercase tracking-widest">Free</span>
     </button>
 
     <div class="flex items-center gap-4 md:gap-8">
         <div class="hidden md:flex gap-1">
-            <button onclick="switchView('lab')" id="nav-btn-lab" class="nav-btn px-4 py-2 rounded-full text-sm font-semibold transition-all hover:bg-white/8 active:scale-95">Laboratorio</button>
+            <button onclick="switchView('lab')"     id="nav-btn-lab"     class="nav-btn px-4 py-2 rounded-full text-sm font-semibold transition-all hover:bg-white/8 active:scale-95">Laboratorio</button>
+            <button onclick="switchView('planes')"  id="nav-btn-planes"  class="nav-btn px-4 py-2 rounded-full text-sm font-semibold transition-all hover:bg-white/8 active:scale-95">Planes</button>
             <button onclick="switchView('account')" id="nav-btn-account" class="nav-btn px-4 py-2 rounded-full text-sm font-semibold transition-all hover:bg-white/8 active:scale-95">Mi Cuenta</button>
         </div>
 
@@ -347,13 +283,18 @@
             <div id="api-dot" class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
             <span id="api-status-text" class="text-[var(--muted)]">Offline</span>
         </div>
+
+        <!-- Mobile scan counter -->
+        <div id="mobile-counter" class="md:hidden text-xs font-mono text-[var(--muted)]">
+            <span id="scans-left-mobile"></span>
+        </div>
     </div>
 </nav>
 
 <!-- ══════════════════════════════════════
      TICKER BAND
 ══════════════════════════════════════════ -->
-<div class="fixed top-[68px] w-full z-40 border-b border-[var(--border)] bg-[var(--bg)]/60 backdrop-blur-sm py-2 ticker-wrap overflow-hidden">
+<div class="fixed top-[68px] w-full z-40 border-b border-[var(--border)] bg-[var(--bg)]/60 backdrop-blur-sm py-2 ticker-wrap">
     <div class="ticker-inner text-[11px] font-mono text-[var(--muted)] uppercase tracking-[.18em] select-none">
         <span class="mr-10">✦ Identificación micológica asistida por IA</span>
         <span class="mr-10">✦ No consumir sin verificación de expertos</span>
@@ -369,72 +310,74 @@
 <!-- ══════════════════════════════════════
      VIEW — LABORATORIO
 ══════════════════════════════════════════ -->
-<main id="view-lab" class="view active w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-40 pb-24">
+<main id="view-lab" class="view active w-full">
 
-    <!-- ── Galería de Hongos ─────────────────── -->
-    <section class="space-y-10 mb-20">
-        <div class="anim-fade-up flex items-end justify-between border-b border-[var(--border)] pb-5">
-            <div>
-                <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-1">Referencia micológica</p>
-                <h2 class="font-display text-4xl md:text-5xl font-black">Galería de Especies</h2>
-            </div>
-            <span class="text-[var(--muted)] text-xs hidden md:block">Haz clic para ver detalles</span>
-        </div>
-        <div id="fungi-grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
-            <!-- JS renders cards here -->
-        </div>
-    </section>
+    <!-- ── HERO CAROUSEL (full-width, pure visual) ─── -->
+    <div id="hero-carousel" class="relative w-full overflow-hidden bg-black" style="height:100svh; min-height:560px;">
+        <!-- slides injected by JS — pure images, no labels -->
+        <div id="hero-dots" class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-20"></div>
 
-    <!-- ── SAFETY ALERT BANNER ─────────────────────── -->
-    <div class="anim-fade-up mb-10 safety-alert rounded-2xl border border-amber-500/40 bg-amber-950/30 p-5 flex gap-4 items-start"
-         role="alert" aria-live="polite">
-        <div class="shrink-0 mt-0.5 w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-        </div>
-        <div>
-            <p class="text-amber-400 font-black text-xs uppercase tracking-widest mb-1.5">Alerta de Seguridad — Uso Informativo y Educativo</p>
-            <p class="text-amber-100/80 text-sm leading-relaxed">
-                Los hongos mostrados o identificados <strong class="text-amber-300">NO deben ser manipulados ni consumidos bajo ninguna circunstancia.</strong>
-                Los modelos de IA no tienen una precisión del 100% y pueden cometer errores. Esta herramienta es <strong class="text-amber-300">puramente informativa y educativa.</strong>
-                Consulta siempre a un micólogo certificado antes de cualquier contacto con especímenes silvestres.
-            </p>
+        <!-- Scroll-down cue -->
+        <div class="absolute bottom-10 right-10 z-20 flex flex-col items-center gap-1.5 opacity-60">
+            <p class="text-[10px] font-mono uppercase tracking-widest text-white">Desplazar</p>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="anim-float"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
     </div>
 
-    <!-- ── MAIN HERO: CAROUSEL + UPLOADER ──────────── -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start mb-24">
-
-        <!-- LEFT: Dynamic Image Carousel -->
-        <div class="anim-fade-up delay-1 flex flex-col gap-6">
-
-            <!-- Carousel -->
-            <div id="fungi-carousel" class="relative w-full rounded-[2.5rem] overflow-hidden border border-[var(--border)] bg-black aspect-[4/3] shadow-[0_32px_80px_rgba(0,0,0,.55)]">
-                <!-- slides injected by JS -->
-                <!-- Progress dots -->
-                <div id="carousel-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
-                <!-- Slide label overlay -->
-                <div id="carousel-label" class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-10 pointer-events-none">
-                    <p id="carousel-name" class="font-display font-bold text-xl text-white"></p>
-                    <p id="carousel-sci" class="text-xs italic text-white/60 mt-0.5"></p>
-                </div>
+    <!-- ── SAFETY ALERT ───────────────────────────── -->
+    <div class="w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-12 pb-0">
+        <div class="safety-alert rounded-2xl border border-amber-500/40 bg-amber-950/30 p-5 flex gap-4 items-start"
+             role="alert" aria-live="polite">
+            <div class="shrink-0 mt-0.5 w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
             </div>
+            <div>
+                <p class="text-amber-400 font-black text-xs uppercase tracking-widest mb-1.5">Alerta de Seguridad — Uso Informativo y Educativo</p>
+                <p class="text-amber-100/80 text-sm leading-relaxed">
+                    Los hongos mostrados o identificados <strong class="text-amber-300">NO deben ser manipulados ni consumidos bajo ninguna circunstancia.</strong>
+                    Los modelos de IA no tienen una precisión del 100% y pueden cometer errores. Esta herramienta es <strong class="text-amber-300">puramente informativa y educativa.</strong>
+                    Consulta siempre a un micólogo certificado antes de cualquier contacto con especímenes silvestres.
+                </p>
+            </div>
+        </div>
+    </div>
 
-            <!-- Hero copy below carousel -->
-            <div class="space-y-5">
+    <!-- ── ANALYSIS MODULE ────────────────────────── -->
+    <div class="w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-12 pb-28">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+
+            <!-- LEFT: Copy + scan counter -->
+            <div class="anim-fade-up space-y-7">
                 <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-[var(--primary)] border border-[var(--border)]">
                     <span class="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse"></span>
                     Motor de visión artificial activo
                 </div>
-                <h1 class="font-display text-5xl md:text-6xl font-black leading-[1.05] text-balance">
+
+                <h1 class="font-display text-5xl md:text-6xl lg:text-[4.5rem] font-black leading-[1.05] text-balance">
                     ¿Es seguro<br>
                     <em class="text-[var(--primary-lt)] not-italic">este hongo?</em>
                 </h1>
+
                 <p class="text-base md:text-lg text-[var(--muted)] leading-relaxed max-w-md">
                     Sube una fotografía clara y nuestro modelo de visión artificial analizará su fisonomía para determinar si es comestible o venenoso.
                 </p>
+
+                <!-- Free scan counter chip -->
+                <div id="scan-counter-wrap" class="inline-flex items-center gap-3 glass px-5 py-3.5 rounded-2xl border border-[var(--border)]">
+                    <div class="flex gap-1.5">
+                        <div id="dot-0" class="w-3 h-3 rounded-full bg-[var(--primary)]"></div>
+                        <div id="dot-1" class="w-3 h-3 rounded-full bg-[var(--primary)]"></div>
+                        <div id="dot-2" class="w-3 h-3 rounded-full bg-[var(--primary)]"></div>
+                    </div>
+                    <div>
+                        <p id="scans-left-text" class="text-sm font-bold text-[var(--text)]">3 análisis disponibles hoy</p>
+                        <p class="text-[11px] text-[var(--muted)]">Plan Gratuito · Se renueva en 24 h</p>
+                    </div>
+                </div>
+
                 <div class="flex flex-wrap gap-3">
                     <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
                         <p class="text-xl font-black text-[var(--primary-lt)]">30+</p>
@@ -450,95 +393,61 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- RIGHT: Scanner Card (compact) -->
-        <div class="anim-scale-in delay-2">
-            <div class="card p-4 relative overflow-hidden flex flex-col shadow-[0_32px_80px_rgba(0,0,0,.6)]">
+            <!-- RIGHT: Scanner Card -->
+            <div class="anim-scale-in delay-2">
+                <div class="card p-4 relative overflow-hidden flex flex-col shadow-[0_32px_80px_rgba(0,0,0,.6)]">
 
-                <!-- Card header -->
-                <div class="flex items-center justify-between px-3 py-2 mb-3">
-                    <p class="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">Módulo de análisis</p>
-                    <div class="flex gap-1.5">
-                        <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-[var(--primary)]/60"></div>
-                    </div>
-                </div>
-
-                <!-- Compact upload zone -->
-                <div id="upload-zone"
-                     class="border-2 border-dashed border-[var(--border)] rounded-[2rem] flex flex-col items-center justify-center cursor-pointer p-6 text-center m-1 gap-4 relative"
-                     style="min-height: 220px;">
-                    <div class="w-14 h-14 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center anim-float">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-base font-bold text-[var(--text)] mb-0.5">Arrastra o haz clic</p>
-                        <p class="text-xs text-[var(--muted)]">JPG, PNG, WEBP — hasta 10 MB</p>
-                    </div>
-                    <input type="file" id="file-input" class="hidden" accept="image/*">
-
-                    <!-- Loading overlay on compact zone -->
-                    <div id="loading-zone-compact" class="rounded-[2rem]">
-                        <div class="spinner-sm"></div>
-                        <div class="text-center">
-                            <p class="text-[var(--primary)] font-mono text-xs tracking-[.2em] uppercase animate-pulse">Analizando muestra</p>
-                            <p class="text-[var(--muted)] text-[11px] mt-0.5">Procesando en Google Colab…</p>
-                        </div>
-                        <div class="w-36 h-1 rounded-full bg-white/5 overflow-hidden">
-                            <div class="h-full rounded-full bg-[var(--primary)] shimmer w-full"></div>
+                    <!-- Card header -->
+                    <div class="flex items-center justify-between px-3 py-2 mb-3">
+                        <p class="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">Módulo de análisis</p>
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-[var(--primary)]/60"></div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Preview zone -->
-                <div id="preview-zone" class="hidden flex flex-col gap-3 m-1 mt-2">
-                    <div class="relative rounded-[1.8rem] overflow-hidden border border-[var(--border)] bg-black/40" style="height: 260px;">
-                        <img id="image-preview" src="" alt="Vista previa del espécimen" class="w-full h-full object-contain">
-                        <button id="btn-cancel"
-                                class="absolute top-4 right-4 w-9 h-9 bg-red-500/90 hover:bg-red-400 text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg text-sm font-bold">✕</button>
-                    </div>
-                    <button id="btn-analyze"
-                            class="btn-primary w-full py-4 text-base font-black tracking-wide shadow-[0_0_40px_rgba(90,176,88,.25)]">
-                        Iniciar Análisis
-                    </button>
-                </div>
-
-                <!-- Loading zone (full overlay fallback — kept for compatibility) -->
-                <div id="loading-zone"
-                     class="hidden absolute inset-0 rounded-[2.4rem] glass flex flex-col items-center justify-center gap-6 z-10 bg-black/75">
-                    <div class="spinner dot-pulse"></div>
-                    <div class="text-center">
-                        <p class="text-[var(--primary)] font-mono text-sm tracking-[.22em] uppercase animate-pulse">Analizando muestra</p>
-                        <p class="text-[var(--muted)] text-xs mt-1">Procesando en Google Colab…</p>
-                    </div>
-                    <div class="w-48 h-1 rounded-full bg-white/5 overflow-hidden">
-                        <div class="h-full rounded-full bg-[var(--primary)] shimmer w-full"></div>
-                    </div>
-                </div>
-
-                <!-- Result zone -->
-                <div id="result-zone"
-                     class="hidden absolute inset-0 rounded-[2.4rem] z-20 flex flex-col items-center justify-center gap-5 p-10 text-center bg-[var(--bg)]/95 backdrop-blur-sm">
-                    <div id="result-icon" class="text-6xl anim-scale-in"></div>
-                    <div>
-                        <h3 id="result-title" class="font-display text-5xl font-black mb-1 anim-fade-up"></h3>
-                        <p id="result-name" class="font-display italic text-2xl text-white/80 anim-fade-up delay-1"></p>
-                    </div>
-                    <div class="w-full space-y-1.5 anim-fade-up delay-2">
-                        <div class="w-full bg-white/8 rounded-full h-2.5 overflow-hidden border border-white/5">
-                            <div id="result-bar" class="h-full rounded-full w-0"></div>
+                    <!-- Upload zone -->
+                    <div id="upload-zone"
+                         class="border-2 border-dashed border-[var(--border)] rounded-[2rem] flex flex-col items-center justify-center cursor-pointer p-6 text-center m-1 gap-4 relative"
+                         style="min-height:220px;">
+                        <div class="w-14 h-14 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center anim-float">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
                         </div>
-                        <p id="result-conf" class="text-xs text-[var(--muted)] text-right font-mono"></p>
+                        <div>
+                            <p class="text-base font-bold text-[var(--text)] mb-0.5">Arrastra o haz clic</p>
+                            <p class="text-xs text-[var(--muted)]">JPG, PNG, WEBP — hasta 10 MB</p>
+                        </div>
+                        <input type="file" id="file-input" class="hidden" accept="image/*">
+
+                        <!-- Compact loading overlay -->
+                        <div id="loading-zone-compact" class="rounded-[2rem]">
+                            <div class="spinner-sm"></div>
+                            <div class="text-center">
+                                <p class="text-[var(--primary)] font-mono text-xs tracking-[.2em] uppercase animate-pulse">Analizando muestra</p>
+                                <p class="text-[var(--muted)] text-[11px] mt-0.5">Procesando en Google Colab…</p>
+                            </div>
+                            <div class="w-36 h-1 rounded-full bg-white/5 overflow-hidden">
+                                <div class="h-full rounded-full bg-[var(--primary)] shimmer w-full"></div>
+                            </div>
+                        </div>
                     </div>
-                    <p id="result-warn"
-                       class="text-sm text-[var(--muted)] bg-white/5 border border-[var(--border)] p-4 rounded-2xl leading-relaxed anim-fade-up delay-3"></p>
-                    <button id="btn-reset" class="btn-ghost px-7 py-3 text-sm font-semibold anim-fade-up delay-4">
-                        Analizar otra muestra
-                    </button>
+
+                    <!-- Preview zone -->
+                    <div id="preview-zone" class="hidden flex-col gap-3 m-1 mt-2">
+                        <div class="relative rounded-[1.8rem] overflow-hidden border border-[var(--border)] bg-black/40" style="height:260px;">
+                            <img id="image-preview" src="" alt="Vista previa del espécimen" class="w-full h-full object-contain">
+                            <button id="btn-cancel"
+                                    class="absolute top-4 right-4 w-9 h-9 bg-red-500/90 hover:bg-red-400 text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg text-sm font-bold">✕</button>
+                        </div>
+                        <button id="btn-analyze"
+                                class="btn-primary w-full py-4 text-base font-black tracking-wide shadow-[0_0_40px_rgba(90,176,88,.25)]">
+                            Iniciar Análisis
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -546,15 +455,111 @@
 </main>
 
 <!-- ══════════════════════════════════════
+     VIEW — PLANES
+══════════════════════════════════════════ -->
+<main id="view-planes" class="view w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-40 pb-28">
+
+    <div class="text-center max-w-2xl mx-auto mb-16 anim-fade-up">
+        <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-3">Suscripciones</p>
+        <h2 class="font-display text-5xl md:text-6xl font-black text-balance mb-5">
+            Elige tu plan
+        </h2>
+        <p class="text-[var(--muted)] text-lg leading-relaxed">
+            Comienza gratis y mejora cuando lo necesites. Sin compromisos.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+
+        <!-- FREE CARD -->
+        <div class="price-card p-8 anim-fade-up delay-1">
+            <div class="mb-8">
+                <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-2">Plan</p>
+                <h3 class="font-display text-4xl font-black mb-1">Gratuito</h3>
+                <div class="flex items-end gap-1 mt-4">
+                    <span class="font-display text-5xl font-black">$0</span>
+                    <span class="text-[var(--muted)] text-sm mb-1.5">COP / mes</span>
+                </div>
+            </div>
+
+            <ul class="space-y-3.5 mb-10">
+                <li class="flex items-start gap-3">
+                    <div class="w-5 h-5 rounded-full border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="text-sm text-[var(--muted)]"><strong class="text-[var(--text)]">3 análisis</strong> cada 24 horas</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-5 h-5 rounded-full border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </div>
+                    <span class="text-sm text-[var(--muted)]">Sin historial de análisis</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-5 h-5 rounded-full border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </div>
+                    <span class="text-sm text-[var(--muted)]">Velocidad estándar</span>
+                </li>
+            </ul>
+
+            <button onclick="switchView('lab')" class="btn-ghost w-full py-4 text-sm font-bold">
+                Comenzar gratis
+            </button>
+        </div>
+
+        <!-- PRO CARD -->
+        <div class="price-card featured p-8 anim-fade-up delay-2 relative overflow-hidden">
+            <!-- Popular badge -->
+            <div class="absolute top-5 right-5 bg-[var(--primary)] text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+                Recomendado
+            </div>
+
+            <div class="mb-8">
+                <p class="text-xs font-mono uppercase tracking-widest text-[var(--primary)] mb-2">Plan</p>
+                <h3 class="font-display text-4xl font-black text-[var(--primary-lt)] mb-1">Pro</h3>
+                <div class="flex items-end gap-1 mt-4">
+                    <span class="font-display text-5xl font-black">$15.000</span>
+                    <span class="text-[var(--muted)] text-sm mb-1.5">COP / mes</span>
+                </div>
+            </div>
+
+            <ul class="space-y-3.5 mb-10">
+                <li class="flex items-start gap-3">
+                    <div class="w-5 h-5 rounded-full bg-[var(--primary)]/20 border border-[var(--primary)]/40 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="text-sm"><strong class="text-[var(--primary-lt)]">Análisis ilimitados</strong></span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-5 h-5 rounded-full bg-[var(--primary)]/20 border border-[var(--primary)]/40 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="text-sm">Historial completo de análisis</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <div class="w-5 h-5 rounded-full bg-[var(--primary)]/20 border border-[var(--primary)]/40 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="text-sm">Mayor velocidad de respuesta</span>
+                </li>
+            </ul>
+
+            <button onclick="activatePro()" class="btn-primary w-full py-4 text-sm font-black shadow-[0_0_40px_rgba(90,176,88,.25)]">
+                Obtener Pro — $15.000 COP
+            </button>
+        </div>
+    </div>
+</main>
+
+<!-- ══════════════════════════════════════
      VIEW — CUENTA
 ══════════════════════════════════════════ -->
-<main id="view-account" class="view w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-40 pb-24">
+<main id="view-account" class="view w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-40 pb-28">
 
-    <!-- ─── AUTH WALL (shown when logged out) ──────── -->
+    <!-- AUTH WALL -->
     <div id="auth-wall" class="max-w-md mx-auto">
         <div class="card p-8">
-
-            <!-- Logo mark -->
             <div class="flex flex-col items-center mb-8">
                 <div class="w-14 h-14 rounded-2xl bg-[var(--primary)]/15 border border-[var(--border)] flex items-center justify-center mb-4">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -567,16 +572,14 @@
 
             <!-- Tabs -->
             <div class="flex gap-1 glass rounded-2xl p-1 mb-7 border border-[var(--border)]" role="tablist">
-                <button id="tab-login-btn"
-                        role="tab" aria-selected="true"
+                <button id="tab-login-btn" role="tab" aria-selected="true"
                         onclick="switchAuthTab('login')"
-                        class="auth-tab flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-[var(--primary)] text-black">
+                        class="auth-tab flex-1 py-2.5 rounded-xl text-sm font-bold bg-[var(--primary)] text-black">
                     Iniciar Sesión
                 </button>
-                <button id="tab-register-btn"
-                        role="tab" aria-selected="false"
+                <button id="tab-register-btn" role="tab" aria-selected="false"
                         onclick="switchAuthTab('register')"
-                        class="auth-tab flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-[var(--muted)] hover:text-[var(--text)]">
+                        class="auth-tab flex-1 py-2.5 rounded-xl text-sm font-bold text-[var(--muted)] hover:text-[var(--text)]">
                     Registrarse
                 </button>
             </div>
@@ -591,14 +594,12 @@
                     <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Contraseña</label>
                     <div class="relative">
                         <input id="login-password" type="password" class="field pr-11" placeholder="••••••••" autocomplete="current-password" required>
-                        <button type="button" onclick="togglePassword('login-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1">
+                        <button type="button" onclick="togglePassword('login-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </div>
                 </div>
-                <button type="submit" class="btn-primary w-full py-4 text-sm mt-2 shadow-[0_0_32px_rgba(90,176,88,.2)]">
-                    Iniciar Sesión
-                </button>
+                <button type="submit" class="btn-primary w-full py-4 text-sm mt-2 shadow-[0_0_32px_rgba(90,176,88,.2)]">Iniciar Sesión</button>
                 <p class="text-center text-xs text-[var(--muted)] pt-1">
                     ¿No tienes cuenta?
                     <button type="button" onclick="switchAuthTab('register')" class="text-[var(--primary-lt)] font-semibold hover:underline">Regístrate gratis</button>
@@ -619,14 +620,12 @@
                     <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Contraseña</label>
                     <div class="relative">
                         <input id="reg-password" type="password" class="field pr-11" placeholder="Mínimo 6 caracteres" autocomplete="new-password" minlength="6" required>
-                        <button type="button" onclick="togglePassword('reg-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1">
+                        <button type="button" onclick="togglePassword('reg-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </div>
                 </div>
-                <button type="submit" class="btn-primary w-full py-4 text-sm mt-2 shadow-[0_0_32px_rgba(90,176,88,.2)]">
-                    Crear Cuenta
-                </button>
+                <button type="submit" class="btn-primary w-full py-4 text-sm mt-2 shadow-[0_0_32px_rgba(90,176,88,.2)]">Crear Cuenta</button>
                 <p class="text-center text-xs text-[var(--muted)] pt-1">
                     ¿Ya tienes cuenta?
                     <button type="button" onclick="switchAuthTab('login')" class="text-[var(--primary-lt)] font-semibold hover:underline">Inicia sesión</button>
@@ -635,11 +634,11 @@
         </div>
     </div>
 
-    <!-- ─── LOGGED-IN DASHBOARD ──────────────────────── -->
+    <!-- LOGGED-IN DASHBOARD -->
     <div id="account-dashboard" class="hidden grid grid-cols-1 lg:grid-cols-5 gap-8">
 
         <!-- Profile Panel -->
-        <div class="lg:col-span-2 space-y-6 anim-fade-up">
+        <div class="lg:col-span-2 anim-fade-up">
             <div class="card p-8">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-xl font-bold">Mi Perfil</h2>
@@ -650,32 +649,27 @@
                         </button>
                         <button onclick="handleLogout()"
                                 class="text-[11px] glass px-3 py-1.5 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all">
-                            Cerrar sesión
+                            Salir
                         </button>
                     </div>
                 </div>
 
                 <div class="flex flex-col items-center mb-8">
-                    <div class="relative group cursor-pointer">
-                        <img id="user-photo"
-                             src="https://ui-avatars.com/api/?name=User&background=5ab058&color=071209&size=256"
-                             alt="Foto de perfil"
-                             class="w-28 h-28 rounded-full border-2 border-[var(--primary)] object-cover shadow-[0_0_30px_rgba(90,176,88,.3)]">
-                        <div class="absolute inset-0 bg-black/55 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                        </div>
-                    </div>
-                    <h3 id="display-name" class="text-xl font-bold mt-4 text-[var(--primary-lt)]">Nombre de Usuario</h3>
+                    <img id="user-photo"
+                         src="https://ui-avatars.com/api/?name=U&background=5ab058&color=071209&size=256"
+                         alt="Foto de perfil"
+                         class="w-24 h-24 rounded-full border-2 border-[var(--primary)] object-cover shadow-[0_0_30px_rgba(90,176,88,.3)]">
+                    <h3 id="display-name" class="text-xl font-bold mt-4 text-[var(--primary-lt)]">Usuario</h3>
                     <p id="display-status" class="text-xs font-mono text-[var(--muted)] mt-1 uppercase tracking-widest">Cuenta Gratuita</p>
                 </div>
 
                 <form class="space-y-4" onsubmit="event.preventDefault(); saveProfile();">
                     <div>
-                        <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Nombre Completo</label>
-                        <input type="text" id="input-name" class="field" placeholder="Tu nombre completo">
+                        <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Nombre</label>
+                        <input type="text" id="input-name" class="field" placeholder="Tu nombre">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Correo Electrónico</label>
+                        <label class="block text-xs font-bold text-[var(--primary)] mb-1.5 uppercase tracking-wider">Correo</label>
                         <input type="email" id="input-email" class="field" placeholder="correo@ejemplo.com">
                     </div>
                     <button type="submit" class="btn-primary w-full py-3.5 text-sm">Guardar Cambios</button>
@@ -685,7 +679,7 @@
 
         <!-- History Panel -->
         <div class="lg:col-span-3 anim-fade-up delay-2">
-            <div class="card p-8 flex flex-col" style="min-height: 520px;">
+            <div class="card p-8 flex flex-col" style="min-height:520px;">
 
                 <div class="flex items-center justify-between mb-6">
                     <div>
@@ -696,16 +690,15 @@
                 </div>
 
                 <!-- PRO: history list -->
-                <div id="pro-content" class="hidden flex-grow flex flex-col gap-3 relative">
-                    <div id="history-list" class="flex-grow space-y-2.5 max-h-[420px] overflow-y-auto pr-1"></div>
+                <div id="pro-content" class="hidden flex-grow flex flex-col gap-3">
+                    <div id="history-list" class="flex-grow space-y-2.5 max-h-[380px] overflow-y-auto pr-1"></div>
                     <p id="history-empty" class="hidden text-[var(--muted)] italic text-sm text-center py-12">
                         Aún no hay análisis registrados. Realiza un escaneo en el Laboratorio para comenzar.
                     </p>
                 </div>
 
-                <!-- FREE: blurred pro-wall overlay -->
+                <!-- FREE: blurred pro-wall -->
                 <div id="free-content" class="flex-grow relative rounded-[var(--radius-lg)] overflow-hidden">
-                    <!-- blurred preview -->
                     <div class="space-y-2.5 pointer-events-none select-none" aria-hidden="true">
                         <div class="hist-card flex items-center gap-4 p-4 opacity-60">
                             <div class="w-10 h-10 rounded-xl bg-[var(--primary)]/15 shrink-0"></div>
@@ -715,7 +708,7 @@
                             </div>
                             <div class="w-16 h-5 bg-[var(--primary)]/15 rounded-full shrink-0"></div>
                         </div>
-                        <div class="hist-card flex items-center gap-4 p-4 opacity-40">
+                        <div class="hist-card flex items-center gap-4 p-4 opacity-35">
                             <div class="w-10 h-10 rounded-xl bg-red-500/15 shrink-0"></div>
                             <div class="flex-grow space-y-1.5">
                                 <div class="h-3 bg-white/10 rounded-full w-28"></div>
@@ -723,7 +716,7 @@
                             </div>
                             <div class="w-16 h-5 bg-red-500/15 rounded-full shrink-0"></div>
                         </div>
-                        <div class="hist-card flex items-center gap-4 p-4 opacity-20">
+                        <div class="hist-card flex items-center gap-4 p-4 opacity-15">
                             <div class="w-10 h-10 rounded-xl bg-white/5 shrink-0"></div>
                             <div class="flex-grow space-y-1.5">
                                 <div class="h-3 bg-white/10 rounded-full w-36"></div>
@@ -732,7 +725,6 @@
                             <div class="w-16 h-5 bg-white/10 rounded-full shrink-0"></div>
                         </div>
                     </div>
-                    <!-- blur overlay -->
                     <div class="absolute inset-0 backdrop-blur-md bg-[var(--bg)]/60 flex flex-col items-center justify-center text-center gap-5 p-8">
                         <div class="w-16 h-16 rounded-2xl bg-[var(--primary)]/10 border border-[var(--border)] flex items-center justify-center">
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -745,8 +737,8 @@
                                 Guarda cada análisis con fecha, hora e indicador de toxicidad. Accede a tu historial completo con la membresía Pro.
                             </p>
                         </div>
-                        <button onclick="toggleUserType()" class="btn-primary px-8 py-3.5 text-sm shadow-[0_0_40px_rgba(90,176,88,.2)]">
-                            Mejorar a Pro
+                        <button onclick="switchView('planes')" class="btn-primary px-8 py-3.5 text-sm shadow-[0_0_40px_rgba(90,176,88,.2)]">
+                            Ver Planes
                         </button>
                     </div>
                 </div>
@@ -756,24 +748,132 @@
 </main>
 
 <!-- ══════════════════════════════════════
-     MODAL — FUNGI DETAIL
+     MODAL — RESULT (AI analysis output)
 ══════════════════════════════════════════ -->
-<div id="modal-overlay" onclick="closeModal(event)">
-    <div id="modal-box" class="card p-0 overflow-hidden w-full max-w-[500px] shadow-[0_32px_80px_rgba(0,0,0,.7)]">
-        <div id="modal-img-wrap" class="relative h-56 bg-[var(--surface)] overflow-hidden">
-            <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
-            <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/80 transition-all text-sm font-bold">✕</button>
-            <div id="modal-badge" class="absolute bottom-4 left-4 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"></div>
+<div id="modal-result" class="modal-overlay" onclick="closeResultModal(event)">
+    <div class="modal-box card p-0 overflow-hidden w-full max-w-[520px] shadow-[0_32px_80px_rgba(0,0,0,.75)]">
+
+        <!-- Top colored band -->
+        <div id="result-band" class="h-2 w-full"></div>
+
+        <!-- Close -->
+        <button onclick="closeResultModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/8 border border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)] hover:bg-white/14 transition-all flex items-center justify-center text-sm font-bold">✕</button>
+
+        <div class="p-8 space-y-6">
+            <!-- Header -->
+            <div class="flex items-center gap-5">
+                <div id="result-icon-wrap" class="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0">
+                    <svg id="result-svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-1">Resultado del análisis</p>
+                    <h3 id="result-title" class="font-display text-4xl font-black leading-none"></h3>
+                </div>
+            </div>
+
+            <!-- Species name -->
+            <div class="glass rounded-2xl px-5 py-4 border border-[var(--border)]">
+                <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-1">Especie identificada</p>
+                <p id="result-name" class="font-display italic text-2xl font-bold"></p>
+            </div>
+
+            <!-- Confidence bar -->
+            <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)]">Confianza del modelo</p>
+                    <p id="result-conf" class="text-sm font-black font-mono"></p>
+                </div>
+                <div class="w-full bg-white/8 rounded-full h-2.5 overflow-hidden border border-white/5">
+                    <div id="result-bar" class="h-full rounded-full w-0" style="transition:width 1.1s cubic-bezier(.22,1,.36,1);"></div>
+                </div>
+            </div>
+
+            <!-- Warning text -->
+            <p id="result-warn" class="text-sm text-[var(--muted)] bg-white/4 border border-[var(--border)] p-4 rounded-2xl leading-relaxed"></p>
+
+            <!-- Actions -->
+            <div class="flex gap-3 pt-1">
+                <button onclick="closeResultModal(); resetApp();" class="btn-primary flex-1 py-3.5 text-sm font-bold">
+                    Nuevo Análisis
+                </button>
+                <button onclick="closeResultModal();" class="btn-ghost px-6 py-3.5 text-sm">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL — GALLERY DETAIL
+══════════════════════════════════════════ -->
+<div id="modal-gallery" class="modal-overlay" onclick="closeGalleryModal(event)">
+    <div class="modal-box card p-0 overflow-hidden w-full max-w-[500px] shadow-[0_32px_80px_rgba(0,0,0,.7)]">
+        <div id="gallery-modal-img-wrap" class="relative h-56 bg-[var(--surface)] overflow-hidden">
+            <img id="gallery-modal-img" src="" alt="" class="w-full h-full object-cover">
+            <button onclick="closeGalleryModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/80 transition-all text-sm font-bold">✕</button>
+            <div id="gallery-modal-badge" class="absolute bottom-4 left-4 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"></div>
         </div>
         <div class="p-7 space-y-4">
             <div>
-                <h3 id="modal-name" class="font-display text-3xl font-black"></h3>
-                <p id="modal-sci" class="text-[var(--muted)] italic text-sm mt-0.5"></p>
+                <h3 id="gallery-modal-name" class="font-display text-3xl font-black"></h3>
+                <p id="gallery-modal-sci" class="text-[var(--muted)] italic text-sm mt-0.5"></p>
             </div>
-            <p id="modal-desc" class="text-[var(--muted)] text-sm leading-relaxed"></p>
+            <p id="gallery-modal-desc" class="text-[var(--muted)] text-sm leading-relaxed"></p>
             <div class="flex gap-3 pt-2">
-                <div id="modal-tag-type" class="glass px-3 py-1.5 rounded-full text-xs font-bold border border-[var(--border)]"></div>
-                <div id="modal-tag-habitat" class="glass px-3 py-1.5 rounded-full text-xs font-bold border border-[var(--border)] text-[var(--muted)]"></div>
+                <div id="gallery-modal-tag-type" class="glass px-3 py-1.5 rounded-full text-xs font-bold border border-[var(--border)]"></div>
+                <div id="gallery-modal-tag-habitat" class="glass px-3 py-1.5 rounded-full text-xs font-bold border border-[var(--border)] text-[var(--muted)]"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL — PAYWALL
+══════════════════════════════════════════ -->
+<div id="modal-paywall" class="modal-overlay">
+    <div class="modal-box card p-0 overflow-hidden w-full max-w-[440px] shadow-[0_32px_80px_rgba(0,0,0,.8)]">
+
+        <!-- Top green accent -->
+        <div class="h-1 w-full bg-[var(--primary)]"></div>
+
+        <div class="p-8 text-center space-y-6">
+            <div class="w-20 h-20 rounded-2xl bg-[var(--primary)]/10 border border-[var(--primary)]/25 flex items-center justify-center mx-auto">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+
+            <div>
+                <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-2">Límite alcanzado</p>
+                <h3 class="font-display text-3xl font-black mb-3 text-balance">Has agotado tus análisis gratuitos</h3>
+                <p class="text-[var(--muted)] text-sm leading-relaxed">
+                    El plan gratuito permite <strong class="text-[var(--text)]">3 análisis cada 24 horas.</strong>
+                    Mejora a Pro y obtén análisis ilimitados, historial completo y mayor velocidad.
+                </p>
+            </div>
+
+            <!-- Mini comparison -->
+            <div class="grid grid-cols-2 gap-3 text-left">
+                <div class="glass rounded-2xl p-4 border border-[var(--border)]">
+                    <p class="text-xs font-black uppercase tracking-widest text-[var(--muted)] mb-2">Free</p>
+                    <p class="text-2xl font-black mb-1">$0</p>
+                    <p class="text-xs text-[var(--muted)]">3 análisis / día</p>
+                </div>
+                <div class="glass rounded-2xl p-4 border border-[var(--primary)]/40 bg-[var(--primary)]/5">
+                    <p class="text-xs font-black uppercase tracking-widest text-[var(--primary)] mb-2">Pro</p>
+                    <p class="text-2xl font-black text-[var(--primary-lt)] mb-1">$15.000</p>
+                    <p class="text-xs text-[var(--muted)]">Ilimitados / día</p>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="activatePro(); closePaywallModal();" class="btn-primary w-full py-4 text-sm font-black shadow-[0_0_40px_rgba(90,176,88,.25)]">
+                    Obtener Pro — $15.000 COP
+                </button>
+                <button onclick="closePaywallModal()" class="btn-ghost w-full py-3.5 text-sm">
+                    Continuar gratis
+                </button>
             </div>
         </div>
     </div>
@@ -785,211 +885,145 @@
 <script>
 /* ─── CONFIG ──────────────────────────────────────── */
 const NGROK_URL = "https://blitz-casing-catalog.ngrok-free.dev";
-let userProfile = { name: "Usuario UIS", email: "estudiante@uis.edu.co", isPro: false };
-let analysisHistory = JSON.parse(localStorage.getItem('fungiHistory')) || [];
 
-/* ─── GALLERY DATA ────────────────────────────────── */
-const FUNGI_DATA = [
-    {
-        id: 1,
-        name: "Amanita muscaria",
-        sci: "Amanita muscaria",
-        type: "VENENOSO",
-        habitat: "Bosques de coníferas",
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Amanita_muscaria_3_vliegenzwammen_op_rij.jpg/640px-Amanita_muscaria_3_vliegenzwammen_op_rij.jpg",
-        desc: "Uno de los hongos más icónicos y reconocibles. Presenta un sombrero rojo brillante con manchas blancas. Contiene muscimol y ácido iboténico, sustancias psicoactivas y tóxicas. No consumir."
-    },
-    {
-        id: 2,
-        name: "Pleurotus ostreatus",
-        sci: "Pleurotus ostreatus",
-        type: "COMESTIBLE",
-        habitat: "Troncos de árboles caducos",
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Pleurotus_ostreatus_JPG1.jpg/640px-Pleurotus_ostreatus_JPG1.jpg",
-        desc: "La seta de ostra es ampliamente cultivada y consumida en todo el mundo. Tiene un sabor suave y una textura carnosa. Rica en proteínas y vitaminas del grupo B. Muy versátil en la cocina."
-    },
-    {
-        id: 3,
-        name: "Boletus edulis",
-        sci: "Boletus edulis",
-        type: "COMESTIBLE",
-        habitat: "Bosques mixtos y de coníferas",
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Boletus_edulis_IT.jpg/640px-Boletus_edulis_IT.jpg",
-        desc: "Conocido como porcini o cep, es uno de los hongos más apreciados gastronómicamente. Su carne es firme y aromática. Se puede consumir fresco, seco o en conserva."
-    },
-    {
-        id: 4,
-        name: "Galerina marginata",
-        sci: "Galerina marginata",
-        type: "VENENOSO",
-        habitat: "Madera en descomposición",
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Galerina_marginata_1.jpg/640px-Galerina_marginata_1.jpg",
-        desc: "Altamente tóxico, contiene amatoxinas similares a las de Amanita phalloides. Puede ser confundido con especies comestibles. Responsable de numerosas intoxicaciones fatales."
-    },
-    {
-        id: 5,
-        name: "Cantharellus cibarius",
-        sci: "Cantharellus cibarius",
-        type: "COMESTIBLE",
-        habitat: "Bosques caducifolios",
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Chanterelle_Cantharellus_cibarius.jpg/640px-Chanterelle_Cantharellus_cibarius.jpg",
-        desc: "La rebozuelo o chantarela es un hongo silvestre muy apreciado. Su aroma frutal y sabor a pimienta lo hacen único. Color amarillo-naranja brillante. Excelente en salsas y guisos."
-    },
-    {
-        id: 6,
-        name: "Amanita phalloides",
-        sci: "Amanita phalloides",
-        type: "VENENOSO",
-        habitat: "Bosques de robles y hayas",
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Amanita_phalloides_1.JPG/640px-Amanita_phalloides_1.JPG",
-        desc: "El hongo más mortal del mundo. Responsable del 90% de las muertes por intoxicación fúngica. Contiene amatoxinas que causan fallo hepático y renal. Nunca recoger ni manipular."
-    },
-    {
-        id: 7,
-        name: "Lentinula edodes",
-        sci: "Lentinula edodes",
-        type: "COMESTIBLE",
-        habitat: "Madera de árboles caducos",
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Lentinula_edodes_LC0068.jpg/640px-Lentinula_edodes_LC0068.jpg",
-        desc: "El shiitake es uno de los hongos más cultivados mundialmente. Originario de Asia, posee propiedades medicinales y un sabor umami intenso. Rico en eritadenina, que reduce el colesterol."
-    },
-    {
-        id: 8,
-        name: "Morchella esculenta",
-        sci: "Morchella esculenta",
-        type: "COMESTIBLE",
-        habitat: "Bosques y praderas en primavera",
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Morchella_esculenta_-_Linnaeus.jpg/640px-Morchella_esculenta_-_Linnaeus.jpg",
-        desc: "La morilla o colmenilla es una delicatesen primaveral muy codiciada. Su aspecto alveolado es inconfundible. Debe cocinarse siempre antes de consumir ya que cruda contiene hemolisinas."
+/* ─── USER PROFILE ────────────────────────────────── */
+let userProfile = {
+    name:  "Usuario UIS",
+    email: "estudiante@uis.edu.co",
+    isPro: false
+};
+let isLoggedIn    = false;
+let analysisHistory = JSON.parse(localStorage.getItem('fungiHistory') || '[]');
+
+/* ─── FREE PLAN LIMITER ───────────────────────────── */
+const FREE_LIMIT = 3;
+
+function getUsageData() {
+    const raw  = localStorage.getItem('scanUsage');
+    const data = raw ? JSON.parse(raw) : { count: 0, resetAt: 0 };
+    const now  = Date.now();
+    if (now >= data.resetAt) {
+        // New 24-hour window
+        return { count: 0, resetAt: now + 24 * 60 * 60 * 1000 };
     }
+    return data;
+}
+
+function saveUsageData(data) {
+    localStorage.setItem('scanUsage', JSON.stringify(data));
+}
+
+function getRemainingScans() {
+    if (userProfile.isPro) return Infinity;
+    const data = getUsageData();
+    return Math.max(0, FREE_LIMIT - data.count);
+}
+
+function incrementUsage() {
+    const data = getUsageData();
+    data.count++;
+    saveUsageData(data);
+    updateScanCounter();
+}
+
+function updateScanCounter() {
+    if (userProfile.isPro) {
+        document.getElementById('scan-counter-wrap').style.display = 'none';
+        return;
+    }
+    document.getElementById('scan-counter-wrap').style.display = '';
+    const remaining = getRemainingScans();
+    const text = remaining === 0
+        ? 'Límite diario alcanzado'
+        : `${remaining} análisis disponible${remaining !== 1 ? 's' : ''} hoy`;
+    document.getElementById('scans-left-text').textContent = text;
+
+    // Update the 3 dots
+    for (let i = 0; i < 3; i++) {
+        const dot = document.getElementById('dot-' + i);
+        if (!dot) continue;
+        dot.style.background = i < remaining
+            ? 'var(--primary)'
+            : 'rgba(255,255,255,0.12)';
+    }
+
+    // Lock/unlock uploader
+    const zone = document.getElementById('upload-zone');
+    if (remaining === 0) {
+        zone.classList.add('locked');
+        zone.title = 'Límite diario alcanzado — Mejora a Pro';
+    } else {
+        zone.classList.remove('locked');
+        zone.title = '';
+    }
+}
+
+/* ─── FUNGI DATA ──────────────────────────────────── */
+const FUNGI_DATA = [
+    { id:1, name:"Amanita muscaria",   sci:"Amanita muscaria",   type:"VENENOSO",   habitat:"Bosques de coníferas",          img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Amanita_muscaria_3_vliegenzwammen_op_rij.jpg/640px-Amanita_muscaria_3_vliegenzwammen_op_rij.jpg",    desc:"Uno de los hongos más icónicos. Sombrero rojo con manchas blancas. Contiene muscimol y ácido iboténico, sustancias psicoactivas y tóxicas. No consumir." },
+    { id:2, name:"Pleurotus ostreatus",sci:"Pleurotus ostreatus", type:"COMESTIBLE", habitat:"Troncos de árboles caducos",    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Pleurotus_ostreatus_JPG1.jpg/640px-Pleurotus_ostreatus_JPG1.jpg",                                        desc:"La seta de ostra es ampliamente cultivada. Sabor suave, textura carnosa. Rica en proteínas y vitaminas B." },
+    { id:3, name:"Boletus edulis",     sci:"Boletus edulis",      type:"COMESTIBLE", habitat:"Bosques mixtos y de coníferas", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Boletus_edulis_IT.jpg/640px-Boletus_edulis_IT.jpg",                                                    desc:"Porcini o cep: uno de los hongos más apreciados. Carne firme y aromática. Se consume fresco, seco o en conserva." },
+    { id:4, name:"Galerina marginata", sci:"Galerina marginata",  type:"VENENOSO",   habitat:"Madera en descomposición",      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Galerina_marginata_1.jpg/640px-Galerina_marginata_1.jpg",                                              desc:"Altamente tóxico. Contiene amatoxinas. Puede confundirse con especies comestibles. Responsable de intoxicaciones fatales." },
+    { id:5, name:"Cantharellus cibarius",sci:"Cantharellus cibarius",type:"COMESTIBLE",habitat:"Bosques caducifolios",        img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Chanterelle_Cantharellus_cibarius.jpg/640px-Chanterelle_Cantharellus_cibarius.jpg",                    desc:"La rebozuelo. Aroma frutal y sabor a pimienta. Color amarillo-naranja brillante. Excelente en salsas y guisos." },
+    { id:6, name:"Amanita phalloides", sci:"Amanita phalloides",  type:"VENENOSO",   habitat:"Bosques de robles y hayas",     img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Amanita_phalloides_1.JPG/640px-Amanita_phalloides_1.JPG",                                              desc:"El hongo más mortal del mundo. Responsable del 90% de muertes por hongos. Contiene amatoxinas. Nunca recoger ni manipular." },
+    { id:7, name:"Lentinula edodes",   sci:"Lentinula edodes",    type:"COMESTIBLE", habitat:"Madera de árboles caducos",     img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Lentinula_edodes_LC0068.jpg/640px-Lentinula_edodes_LC0068.jpg",                                        desc:"El shiitake. Propiedades medicinales y sabor umami intenso. Rico en eritadenina, que reduce el colesterol." },
+    { id:8, name:"Morchella esculenta",sci:"Morchella esculenta", type:"COMESTIBLE", habitat:"Bosques y praderas en primavera",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Morchella_esculenta_-_Linnaeus.jpg/640px-Morchella_esculenta_-_Linnaeus.jpg",                       desc:"La morilla. Aspecto alveolado inconfundible. Debe cocinarse antes de consumir ya que cruda contiene hemolisinas." }
 ];
 
-/* ─── CAROUSEL ────────────────────────────────────── */
-const CAROUSEL_IMGS = FUNGI_DATA.map(f => ({ img: f.img, name: f.name, sci: f.sci }));
-let carouselIndex = 0;
-let carouselTimer = null;
+/* ─── HERO CAROUSEL (pure visual, no labels) ─────── */
+let heroIndex = 0;
+let heroTimer  = null;
 
-function buildCarousel() {
-    const wrap = document.getElementById('fungi-carousel');
-    const dotsWrap = document.getElementById('carousel-dots');
+function buildHeroCarousel() {
+    const wrap     = document.getElementById('hero-carousel');
+    const dotsWrap = document.getElementById('hero-dots');
 
-    CAROUSEL_IMGS.forEach((item, i) => {
+    FUNGI_DATA.forEach((item, i) => {
         const slide = document.createElement('div');
-        slide.className = 'carousel-slide' + (i === 0 ? ' active' : '');
-        slide.style.backgroundImage = `url('${item.img}')`;
-        slide.style.backgroundSize = 'cover';
-        slide.style.backgroundPosition = 'center';
-        wrap.insertBefore(slide, document.getElementById('carousel-dots'));
+        slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+        const img = document.createElement('img');
+        img.src   = item.img;
+        img.alt   = '';   // purely decorative
+        img.setAttribute('aria-hidden', 'true');
+        img.className = 'w-full h-full object-cover';
+        img.loading = 'lazy';
+        slide.appendChild(img);
+        wrap.insertBefore(slide, dotsWrap);
 
         const dot = document.createElement('button');
         dot.className = `w-2 h-2 rounded-full border border-white/40 transition-all ${i === 0 ? 'bg-white scale-125' : 'bg-white/30'}`;
-        dot.setAttribute('aria-label', `Slide ${i + 1}`);
-        dot.addEventListener('click', () => goToSlide(i));
+        dot.setAttribute('aria-label', `Imagen ${i + 1}`);
+        dot.addEventListener('click', () => goToHeroSlide(i));
         dotsWrap.appendChild(dot);
     });
-    updateCarouselLabel();
 }
 
-function goToSlide(index) {
-    const slides = document.querySelectorAll('.carousel-slide');
-    const dots   = document.querySelectorAll('#carousel-dots button');
-    slides[carouselIndex].classList.remove('active');
-    dots[carouselIndex].classList.remove('bg-white', 'scale-125');
-    dots[carouselIndex].classList.add('bg-white/30');
-    carouselIndex = index;
-    slides[carouselIndex].classList.add('active');
-    dots[carouselIndex].classList.add('bg-white', 'scale-125');
-    dots[carouselIndex].classList.remove('bg-white/30');
-    updateCarouselLabel();
-    resetCarouselTimer();
+function goToHeroSlide(index) {
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots   = document.querySelectorAll('#hero-dots button');
+    slides[heroIndex].classList.remove('active');
+    dots[heroIndex].classList.remove('bg-white', 'scale-125');
+    dots[heroIndex].classList.add('bg-white/30');
+    heroIndex = index;
+    slides[heroIndex].classList.add('active');
+    dots[heroIndex].classList.add('bg-white', 'scale-125');
+    dots[heroIndex].classList.remove('bg-white/30');
+    resetHeroTimer();
 }
 
-function nextSlide() {
-    goToSlide((carouselIndex + 1) % CAROUSEL_IMGS.length);
+function resetHeroTimer() {
+    clearInterval(heroTimer);
+    heroTimer = setInterval(() => goToHeroSlide((heroIndex + 1) % FUNGI_DATA.length), 4500);
 }
-
-function updateCarouselLabel() {
-    document.getElementById('carousel-name').textContent = CAROUSEL_IMGS[carouselIndex].name;
-    document.getElementById('carousel-sci').textContent  = CAROUSEL_IMGS[carouselIndex].sci;
-}
-
-function resetCarouselTimer() {
-    clearInterval(carouselTimer);
-    carouselTimer = setInterval(nextSlide, 4000);
-}
-
-/* ─── RENDER GALLERY ──────────────────────────────── */
-function renderGallery() {
-    const grid = document.getElementById('fungi-grid');
-    grid.innerHTML = '';
-    FUNGI_DATA.forEach((f, i) => {
-        const isPoison = f.type === 'VENENOSO';
-        const card = document.createElement('div');
-        card.className = 'card cursor-pointer overflow-hidden group anim-fade-up';
-        card.style.animationDelay = `${i * 0.07}s`;
-        card.innerHTML = `
-            <div class="relative h-48 overflow-hidden rounded-t-[calc(2.5rem-4px)]">
-                <img src="${f.img}" alt="${f.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" onerror="this.src='https://placehold.co/400x300/111f13/5ab058?text=🍄'">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest
-                    ${isPoison ? 'bg-red-500/80 text-white' : 'bg-[var(--primary)]/80 text-black'}">
-                    ${f.type}
-                </span>
-            </div>
-            <div class="p-5">
-                <h3 class="font-display font-bold text-lg leading-tight mb-1">${f.name}</h3>
-                <p class="text-xs italic text-[var(--muted)]">${f.sci}</p>
-            </div>
-        `;
-        card.addEventListener('click', () => openModal(f));
-        grid.appendChild(card);
-    });
-}
-
-/* ─── MODAL ───────────────────────────────────────── */
-function openModal(f) {
-    const isPoison = f.type === 'VENENOSO';
-    document.getElementById('modal-img').src = f.img;
-    document.getElementById('modal-img').alt = f.name;
-    document.getElementById('modal-name').textContent = f.name;
-    document.getElementById('modal-sci').textContent = f.sci;
-    document.getElementById('modal-desc').textContent = f.desc;
-    document.getElementById('modal-tag-habitat').textContent = '📍 ' + f.habitat;
-
-    const badge = document.getElementById('modal-badge');
-    const tag = document.getElementById('modal-tag-type');
-    if (isPoison) {
-        badge.textContent = '☠️ Venenoso';
-        badge.className = 'absolute bottom-4 left-4 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-red-500/90 text-white';
-        tag.textContent = '⚠️ Venenoso';
-        tag.className = 'glass px-3 py-1.5 rounded-full text-xs font-bold border border-red-500/30 text-red-400';
-    } else {
-        badge.textContent = '✅ Comestible';
-        badge.className = 'absolute bottom-4 left-4 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-[var(--primary)]/90 text-black';
-        tag.textContent = '✅ Comestible';
-        tag.className = 'glass px-3 py-1.5 rounded-full text-xs font-bold border border-[var(--border)] text-[var(--primary-lt)]';
-    }
-
-    const overlay = document.getElementById('modal-overlay');
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal(e) {
-    if (e && e.target !== document.getElementById('modal-overlay') && e.target !== e.currentTarget) return;
-    document.getElementById('modal-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-}
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 /* ─── NAVIGATION ──────────────────────────────────── */
 function switchView(view) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + view).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-[var(--primary)]'));
-    const activeBtn = document.getElementById('nav-btn-' + view);
-    if (activeBtn) activeBtn.classList.add('text-[var(--primary)]');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-[var(--primary)]', 'font-bold'));
+    const btn = document.getElementById('nav-btn-' + view);
+    if (btn) btn.classList.add('text-[var(--primary)]', 'font-bold');
+    window.scrollTo({ top:0, behavior:'smooth' });
 }
 
 /* ─── SCROLL EFFECT ───────────────────────────────── */
@@ -997,27 +1031,24 @@ window.addEventListener('scroll', () => {
     document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
 });
 
-/* ─── AUTH STATE ──────────────────────────────────── */
-let isLoggedIn = false;
-
+/* ─── AUTH ────────────────────────────────────────── */
 function switchAuthTab(tab) {
-    const loginBtn = document.getElementById('tab-login-btn');
-    const regBtn   = document.getElementById('tab-register-btn');
+    const loginBtn  = document.getElementById('tab-login-btn');
+    const regBtn    = document.getElementById('tab-register-btn');
     const loginForm = document.getElementById('tab-login');
     const regForm   = document.getElementById('tab-register');
-
     if (tab === 'login') {
         loginBtn.classList.add('bg-[var(--primary)]', 'text-black');
-        loginBtn.classList.remove('text-[var(--muted)]', 'hover:text-[var(--text)]');
+        loginBtn.classList.remove('text-[var(--muted)]');
         regBtn.classList.remove('bg-[var(--primary)]', 'text-black');
-        regBtn.classList.add('text-[var(--muted)]', 'hover:text-[var(--text)]');
+        regBtn.classList.add('text-[var(--muted)]');
         loginForm.classList.remove('hidden');
         regForm.classList.add('hidden');
     } else {
         regBtn.classList.add('bg-[var(--primary)]', 'text-black');
-        regBtn.classList.remove('text-[var(--muted)]', 'hover:text-[var(--text)]');
+        regBtn.classList.remove('text-[var(--muted)]');
         loginBtn.classList.remove('bg-[var(--primary)]', 'text-black');
-        loginBtn.classList.add('text-[var(--muted)]', 'hover:text-[var(--text)]');
+        loginBtn.classList.add('text-[var(--muted)]');
         regForm.classList.remove('hidden');
         loginForm.classList.add('hidden');
     }
@@ -1027,10 +1058,8 @@ function handleLogin() {
     const email    = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
     if (!email || !password) return;
-
-    // Simulate login — in production this would call a real API
     userProfile.email = email;
-    userProfile.name  = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    userProfile.name  = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g, c => c.toUpperCase());
     isLoggedIn = true;
     showDashboard();
     showToast('Bienvenido, ' + userProfile.name);
@@ -1041,7 +1070,6 @@ function handleRegister() {
     const email    = document.getElementById('reg-email').value.trim();
     const password = document.getElementById('reg-password').value;
     if (!name || !email || !password) return;
-
     userProfile.name  = name;
     userProfile.email = email;
     isLoggedIn = true;
@@ -1052,54 +1080,65 @@ function handleRegister() {
 function handleLogout() {
     isLoggedIn = false;
     document.getElementById('auth-wall').classList.remove('hidden');
-    document.getElementById('account-dashboard').classList.add('hidden');
-    document.getElementById('account-dashboard').classList.remove('grid');
-    showToast('Sesión cerrada correctamente');
+    const dash = document.getElementById('account-dashboard');
+    dash.classList.add('hidden');
+    dash.classList.remove('grid');
+    showToast('Sesión cerrada');
 }
 
 function showDashboard() {
     document.getElementById('auth-wall').classList.add('hidden');
-    document.getElementById('account-dashboard').classList.remove('hidden');
-    document.getElementById('account-dashboard').classList.add('grid');
+    const dash = document.getElementById('account-dashboard');
+    dash.classList.remove('hidden');
+    dash.classList.add('grid');
     updateAccountUI();
 }
 
-function togglePassword(inputId, btn) {
-    const input = document.getElementById(inputId);
-    input.type = input.type === 'password' ? 'text' : 'password';
+function togglePassword(inputId) {
+    const el = document.getElementById(inputId);
+    el.type = el.type === 'password' ? 'text' : 'password';
 }
 
-/* ─── PROFILE ─────────────────────────────────────── */
+/* ─── PROFILE & PLAN ──────────────────────────────── */
 function toggleUserType() {
     userProfile.isPro = !userProfile.isPro;
     updateAccountUI();
+    updateScanCounter();
+}
+
+function activatePro() {
+    userProfile.isPro = true;
+    updateScanCounter();
+    if (isLoggedIn) updateAccountUI();
+    showToast('¡Plan Pro activado! Análisis ilimitados.');
+    switchView('lab');
 }
 
 function saveProfile() {
     userProfile.name  = document.getElementById('input-name').value  || userProfile.name;
     userProfile.email = document.getElementById('input-email').value || userProfile.email;
     updateAccountUI();
-    showToast('Perfil actualizado correctamente');
+    showToast('Perfil actualizado');
 }
 
 function updateAccountUI() {
     const badge         = document.getElementById('nav-badge');
-    const displayStatus = document.getElementById('display-status');
     const displayName   = document.getElementById('display-name');
+    const displayStatus = document.getElementById('display-status');
     const proContent    = document.getElementById('pro-content');
     const freeContent   = document.getElementById('free-content');
     const histBadge     = document.getElementById('history-pro-badge');
-
     if (!displayName) return;
 
     displayName.textContent = userProfile.name;
     document.getElementById('input-name').value  = userProfile.name;
     document.getElementById('input-email').value = userProfile.email;
 
-    // Update avatar
-    const photo = document.getElementById('user-photo');
-    const initials = encodeURIComponent(userProfile.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'U');
-    photo.src = `https://ui-avatars.com/api/?name=${initials}&background=5ab058&color=071209&size=256`;
+    const initials = encodeURIComponent(
+        userProfile.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() || 'U'
+    );
+    document.getElementById('user-photo').src =
+        `https://ui-avatars.com/api/?name=${initials}&background=5ab058&color=071209&size=256`;
 
     if (userProfile.isPro) {
         badge.textContent = 'Pro';
@@ -1148,38 +1187,50 @@ function renderHistory() {
                 <p class="font-semibold text-sm truncate">${item.name}</p>
                 <p class="text-[11px] text-[var(--muted)] font-mono">${item.date}</p>
             </div>
-            <div class="text-right shrink-0 space-y-1">
-                <span class="block text-[10px] font-black px-2.5 py-1 rounded-full border
-                    ${isPoison
-                        ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                        : 'bg-[var(--primary)]/10 border-[var(--primary)]/30 text-[var(--primary-lt)]'}">
-                    ${isPoison ? 'No seguro' : 'Seguro'}
-                </span>
-                <p class="text-[10px] text-[var(--muted)] font-mono">${Math.round(item.conf * 100)}% conf.</p>
-            </div>
+            <span class="text-[10px] font-black px-2.5 py-1 rounded-full border shrink-0
+                ${isPoison
+                    ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                    : 'bg-[var(--primary)]/10 border-[var(--primary)]/30 text-[var(--primary-lt)]'}">
+                ${isPoison ? 'No seguro' : 'Seguro'}
+            </span>
         `;
         list.appendChild(card);
     });
 }
 
 /* ─── FILE HANDLING ───────────────────────────────── */
-const elFileInput  = document.getElementById('file-input');
-let currentFile    = null;
+const elFileInput = document.getElementById('file-input');
+let currentFile   = null;
 
-document.getElementById('upload-zone').addEventListener('click', () => elFileInput.click());
+document.getElementById('upload-zone').addEventListener('click', () => {
+    if (document.getElementById('upload-zone').classList.contains('locked')) {
+        openPaywallModal();
+        return;
+    }
+    elFileInput.click();
+});
+
 document.getElementById('upload-zone').addEventListener('dragover', e => {
     e.preventDefault();
-    document.getElementById('upload-zone').style.borderColor = 'var(--primary)';
+    if (!document.getElementById('upload-zone').classList.contains('locked')) {
+        document.getElementById('upload-zone').style.borderColor = 'var(--primary)';
+    }
 });
+
 document.getElementById('upload-zone').addEventListener('dragleave', () => {
     document.getElementById('upload-zone').style.borderColor = '';
 });
+
 document.getElementById('upload-zone').addEventListener('drop', e => {
     e.preventDefault();
     document.getElementById('upload-zone').style.borderColor = '';
+    if (document.getElementById('upload-zone').classList.contains('locked')) {
+        openPaywallModal(); return;
+    }
     const f = e.dataTransfer.files[0];
     if (f && f.type.startsWith('image/')) handleFile(f);
 });
+
 elFileInput.addEventListener('change', e => {
     if (e.target.files[0]) handleFile(e.target.files[0]);
 });
@@ -1188,27 +1239,34 @@ function handleFile(f) {
     currentFile = f;
     document.getElementById('image-preview').src = URL.createObjectURL(f);
     document.getElementById('upload-zone').classList.add('hidden');
-    document.getElementById('preview-zone').classList.remove('hidden');
+    const pz = document.getElementById('preview-zone');
+    pz.classList.remove('hidden');
+    pz.classList.add('flex');
 }
 
 document.getElementById('btn-cancel').addEventListener('click', resetApp);
-document.getElementById('btn-reset').addEventListener('click', resetApp);
 
 function resetApp() {
     currentFile = null;
     elFileInput.value = '';
-    document.getElementById('preview-zone').classList.add('hidden');
-    document.getElementById('result-zone').classList.add('hidden');
+    const pz = document.getElementById('preview-zone');
+    pz.classList.add('hidden');
+    pz.classList.remove('flex');
     document.getElementById('loading-zone-compact').classList.remove('visible');
     document.getElementById('upload-zone').classList.remove('hidden');
-    // reset bar
-    document.getElementById('result-bar').style.width = '0';
 }
 
 /* ─── ANALYSIS ────────────────────────────────────── */
 document.getElementById('btn-analyze').addEventListener('click', async () => {
-    hide('preview-zone');
-    // Show compact loading overlay on the upload zone
+    // Guard: check remaining scans
+    if (!userProfile.isPro && getRemainingScans() <= 0) {
+        openPaywallModal();
+        return;
+    }
+
+    const pz = document.getElementById('preview-zone');
+    pz.classList.add('hidden');
+    pz.classList.remove('flex');
     document.getElementById('upload-zone').classList.remove('hidden');
     document.getElementById('loading-zone-compact').classList.add('visible');
 
@@ -1223,62 +1281,147 @@ document.getElementById('btn-analyze').addEventListener('click', async () => {
         });
         const data = await response.json();
         document.getElementById('loading-zone-compact').classList.remove('visible');
-        showResult(data);
 
+        // Increment usage for free users
+        if (!userProfile.isPro) incrementUsage();
+
+        // Show result in modal
+        showResultModal(data);
+
+        // Save to history (Pro only)
         if (userProfile.isPro) {
             const now = new Date();
             analysisHistory.push({
                 name: data.nombre_comun,
                 type: data.prediccion,
                 conf: data.confianza,
-                date: now.toLocaleDateString('es-CO') + ' · ' + now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+                date: now.toLocaleDateString('es-CO') + ' · ' + now.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' })
             });
             localStorage.setItem('fungiHistory', JSON.stringify(analysisHistory));
         }
+
+        resetApp();
     } catch (error) {
         document.getElementById('loading-zone-compact').classList.remove('visible');
-        hide('upload-zone');
-        show('preview-zone');
+        const pz2 = document.getElementById('preview-zone');
+        pz2.classList.remove('hidden');
+        pz2.classList.add('flex');
+        document.getElementById('upload-zone').classList.add('hidden');
         showToast('Error de conexión con el servidor', true);
     }
 });
 
-function showResult(data) {
-    hide('loading-zone');
-    hide('preview-zone');
-    show('result-zone');
-
+/* ─── RESULT MODAL ────────────────────────────────── */
+function showResultModal(data) {
     const isPoison = data.prediccion === 'VENENOSO';
     const color    = isPoison ? '#e05555' : '#5ab058';
 
+    document.getElementById('result-band').style.background = color;
     document.getElementById('result-title').textContent = data.prediccion;
-    document.getElementById('result-title').style.color = color;
-    document.getElementById('result-icon').textContent  = isPoison ? '☠️' : '✅';
-    document.getElementById('result-name').textContent  = data.nombre_comun;
-    document.getElementById('result-warn').textContent  = data.advertencia;
-    document.getElementById('result-conf').textContent  = `Confianza: ${Math.round(data.confianza * 100)}%`;
+    document.getElementById('result-title').style.color  = color;
+    document.getElementById('result-name').textContent   = data.nombre_comun;
+    document.getElementById('result-warn').textContent   = data.advertencia;
+    document.getElementById('result-conf').textContent   = `${Math.round(data.confianza * 100)}%`;
+    document.getElementById('result-conf').style.color   = color;
 
+    // Icon
+    const wrap = document.getElementById('result-icon-wrap');
+    const svg  = document.getElementById('result-svg');
+    if (isPoison) {
+        wrap.style.background = 'rgba(224,85,85,.12)';
+        wrap.style.border     = '1px solid rgba(224,85,85,.25)';
+        svg.setAttribute('stroke', '#e05555');
+        svg.innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>';
+    } else {
+        wrap.style.background = 'rgba(90,176,88,.12)';
+        wrap.style.border     = '1px solid rgba(90,176,88,.25)';
+        svg.setAttribute('stroke', '#5ab058');
+        svg.innerHTML = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+    }
+
+    // Confidence bar
     const bar = document.getElementById('result-bar');
     bar.style.backgroundColor = color;
     bar.style.width = '0';
+    document.getElementById('modal-result').classList.add('open');
+    document.body.style.overflow = 'hidden';
     requestAnimationFrame(() => {
-        setTimeout(() => { bar.style.width = `${data.confianza * 100}%`; bar.style.transition = 'width 1s cubic-bezier(.22,1,.36,1)'; }, 80);
+        setTimeout(() => { bar.style.width = `${data.confianza * 100}%`; }, 120);
     });
 }
+
+function closeResultModal(e) {
+    if (e && e.target !== document.getElementById('modal-result')) return;
+    document.getElementById('modal-result').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+/* ─── GALLERY MODAL ───────────────────────────────── */
+function openGalleryModal(f) {
+    const isPoison = f.type === 'VENENOSO';
+    document.getElementById('gallery-modal-img').src  = f.img;
+    document.getElementById('gallery-modal-img').alt  = f.name;
+    document.getElementById('gallery-modal-name').textContent = f.name;
+    document.getElementById('gallery-modal-sci').textContent  = f.sci;
+    document.getElementById('gallery-modal-desc').textContent = f.desc;
+    document.getElementById('gallery-modal-tag-habitat').textContent = f.habitat;
+
+    const badge = document.getElementById('gallery-modal-badge');
+    const tag   = document.getElementById('gallery-modal-tag-type');
+    if (isPoison) {
+        badge.textContent = 'Venenoso';
+        badge.className = 'absolute bottom-4 left-4 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-red-500/90 text-white';
+        tag.textContent = 'Venenoso';
+        tag.className   = 'glass px-3 py-1.5 rounded-full text-xs font-bold border border-red-500/30 text-red-400';
+    } else {
+        badge.textContent = 'Comestible';
+        badge.className = 'absolute bottom-4 left-4 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-[var(--primary)]/90 text-black';
+        tag.textContent = 'Comestible';
+        tag.className   = 'glass px-3 py-1.5 rounded-full text-xs font-bold border border-[var(--border)] text-[var(--primary-lt)]';
+    }
+
+    document.getElementById('modal-gallery').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGalleryModal(e) {
+    if (e && e.target !== document.getElementById('modal-gallery')) return;
+    document.getElementById('modal-gallery').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+/* ─── PAYWALL MODAL ───────────────────────────────── */
+function openPaywallModal() {
+    document.getElementById('modal-paywall').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePaywallModal() {
+    document.getElementById('modal-paywall').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+/* ─── KEYBOARD CLOSE ──────────────────────────────── */
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    closeResultModal();
+    closeGalleryModal();
+    closePaywallModal();
+});
 
 /* ─── API STATUS ──────────────────────────────────── */
 async function checkApiStatus() {
     const dot = document.getElementById('api-dot');
     const txt = document.getElementById('api-status-text');
     try {
-        const res = await fetch(`${NGROK_URL}/`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
+        const res = await fetch(`${NGROK_URL}/`, { headers:{ 'ngrok-skip-browser-warning':'true' } });
         if (res.ok) {
-            dot.className = 'w-2.5 h-2.5 rounded-full bg-[var(--primary)] shadow-[0_0_8px_var(--primary)] dot-pulse';
+            dot.className  = 'w-2.5 h-2.5 rounded-full bg-[var(--primary)] shadow-[0_0_8px_var(--primary)] dot-pulse';
             txt.textContent = 'Online';
             txt.style.color = 'var(--primary-lt)';
         } else throw new Error();
     } catch {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-red-500';
+        dot.className  = 'w-2.5 h-2.5 rounded-full bg-red-500';
         txt.textContent = 'Offline';
         txt.style.color = '';
     }
@@ -1301,17 +1444,16 @@ function showToast(msg, isError = false) {
         box-shadow:0 8px 32px rgba(0,0,0,.5);
     `;
     document.body.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 2800);
+    setTimeout(() => {
+        t.style.opacity = '0'; t.style.transition = 'opacity .3s';
+        setTimeout(() => t.remove(), 300);
+    }, 2800);
 }
 
-/* ─── HELPERS ─────────────────────────────────────── */
-function show(id) { document.getElementById(id).classList.remove('hidden'); }
-function hide(id) { document.getElementById(id).classList.add('hidden'); }
-
 /* ─── INIT ────────────────────────────────────────── */
-renderGallery();
-buildCarousel();
-resetCarouselTimer();
+buildHeroCarousel();
+resetHeroTimer();
+updateScanCounter();
 switchView('lab');
 </script>
 </body>
