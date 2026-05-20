@@ -640,19 +640,23 @@
         <!-- Profile Panel -->
         <div class="lg:col-span-2 anim-fade-up">
             <div class="card p-8">
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-xl font-bold">Mi Perfil</h2>
-                    <div class="flex gap-2">
-                        <button onclick="toggleUserType()"
-                                class="text-[11px] glass px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
-                            Toggle Pro / Free
-                        </button>
-                        <button onclick="handleLogout()"
-                                class="text-[11px] glass px-3 py-1.5 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all">
-                            Salir
-                        </button>
-                    </div>
-                </div>
+  <div class="flex items-center justify-between mb-8">
+  <h2 class="text-xl font-bold">Mi Perfil</h2>
+  <div class="flex gap-2 flex-wrap justify-end">
+  <button onclick="resetDemo()"
+  class="text-[11px] glass px-3 py-1.5 rounded-full border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 transition-all">
+  Reiniciar Demo
+  </button>
+  <button onclick="toggleUserType()"
+  class="text-[11px] glass px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
+  Toggle Pro / Free
+  </button>
+  <button onclick="handleLogout()"
+  class="text-[11px] glass px-3 py-1.5 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all">
+  Salir
+  </button>
+  </div>
+  </div>
 
                 <div class="flex flex-col items-center mb-8">
                     <img id="user-photo"
@@ -927,36 +931,42 @@ function incrementUsage() {
 }
 
 function updateScanCounter() {
-    if (userProfile.isPro) {
-        document.getElementById('scan-counter-wrap').style.display = 'none';
-        return;
-    }
-    document.getElementById('scan-counter-wrap').style.display = '';
-    const remaining = getRemainingScans();
-    const text = remaining === 0
-        ? 'Límite diario alcanzado'
-        : `${remaining} análisis disponible${remaining !== 1 ? 's' : ''} hoy`;
-    document.getElementById('scans-left-text').textContent = text;
+  if (userProfile.isPro) {
+  document.getElementById('scan-counter-wrap').style.display = 'none';
+  return;
+  }
+  document.getElementById('scan-counter-wrap').style.display = '';
+  const remaining = getRemainingScans();
+  const text = remaining === 0
+  ? 'Límite diario alcanzado'
+  : `${remaining} análisis disponible${remaining !== 1 ? 's' : ''} hoy`;
+  document.getElementById('scans-left-text').textContent = text;
+  
+  // Update the 3 dots
+  for (let i = 0; i < 3; i++) {
+  const dot = document.getElementById('dot-' + i);
+  if (!dot) continue;
+  dot.style.background = i < remaining
+  ? 'var(--primary)'
+  : 'rgba(255,255,255,0.12)';
+  }
+  
+  // Lock/unlock uploader
+  const zone = document.getElementById('upload-zone');
+  if (remaining === 0) {
+  zone.classList.add('locked');
+  zone.title = 'Límite diario alcanzado — Mejora a Pro';
+  } else {
+  zone.classList.remove('locked');
+  zone.title = '';
+  }
+  }
 
-    // Update the 3 dots
-    for (let i = 0; i < 3; i++) {
-        const dot = document.getElementById('dot-' + i);
-        if (!dot) continue;
-        dot.style.background = i < remaining
-            ? 'var(--primary)'
-            : 'rgba(255,255,255,0.12)';
-    }
-
-    // Lock/unlock uploader
-    const zone = document.getElementById('upload-zone');
-    if (remaining === 0) {
-        zone.classList.add('locked');
-        zone.title = 'Límite diario alcanzado — Mejora a Pro';
-    } else {
-        zone.classList.remove('locked');
-        zone.title = '';
-    }
-}
+  function resetDemo() {
+  localStorage.removeItem('scanUsage');
+  updateScanCounter();
+  showToast('Demo reiniciada — 3 análisis disponibles');
+  }
 
 /* ─── FUNGI DATA ──────────────────────────────────── */
 const FUNGI_DATA = [
@@ -1038,7 +1048,7 @@ window.addEventListener('scroll', () => {
     document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
 });
 
-/* ─── AUTH ────────────────────────────────────────── */
+/* ─── AUTH ────────────────��───────────────────────── */
 function switchAuthTab(tab) {
     const loginBtn  = document.getElementById('tab-login-btn');
     const regBtn    = document.getElementById('tab-register-btn');
