@@ -81,6 +81,17 @@
             0%   { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
+        @keyframes carousel-fade-in {
+            from { opacity: 0; transform: scale(1.04); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes alert-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.2); }
+            50%       { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+        }
+        @keyframes spinner-overlay {
+            to { transform: rotate(360deg); }
+        }
 
         .anim-fade-up   { animation: fadeUp .65s cubic-bezier(.22,1,.36,1) both; }
         .anim-fade-in   { animation: fadeIn .5s ease both; }
@@ -238,6 +249,55 @@
         }
         .field::placeholder { color: var(--muted); }
 
+        /* ─── CAROUSEL ───────────────────────────── */
+        .carousel-slide {
+            position: absolute; inset: 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+        .carousel-slide.active {
+            opacity: 1;
+            animation: carousel-fade-in 1s cubic-bezier(.22,1,.36,1) both;
+        }
+
+        /* ─── SAFETY ALERT ────────────────────────── */
+        .safety-alert {
+            animation: alert-pulse 3s ease-in-out infinite;
+        }
+
+        /* ─── COMPACT UPLOADER ────────────────────── */
+        #upload-zone-compact {
+            transition: border-color .3s, background .3s, transform .2s;
+        }
+        #upload-zone-compact:hover {
+            border-color: var(--primary);
+            background: rgba(90,176,88,.05);
+        }
+        #upload-zone-compact:active { transform: scale(.99); }
+
+        /* ─── LOADING OVERLAY (compact) ──────────── */
+        #loading-zone-compact {
+            display: none;
+            position: absolute; inset: 0;
+            background: rgba(7,18,9,.82);
+            backdrop-filter: blur(6px);
+            border-radius: inherit;
+            z-index: 10;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        #loading-zone-compact.visible { display: flex; }
+        .spinner-sm {
+            width: 40px; height: 40px;
+            border: 2.5px solid rgba(90,176,88,.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spinner-overlay .8s linear infinite;
+        }
+
         /* ─── PULSE DOT ───────────────────────────── */
         .dot-pulse { animation: pulse-ring 2s ease infinite; }
 
@@ -294,55 +354,76 @@
 ══════════════════════════════════════════ -->
 <main id="view-lab" class="view active w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-40 pb-24">
 
-    <!-- Hero Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-24">
-
-        <!-- Left: Copy -->
-        <div class="space-y-8">
-            <div class="anim-fade-up inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-[var(--primary)] border border-[var(--border)]">
-                <span class="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse"></span>
-                Motor de visión artificial activo
-            </div>
-
-            <h1 class="anim-fade-up delay-1 font-display text-6xl md:text-7xl lg:text-[5.5rem] font-black leading-[1.05] text-balance">
-                ¿Es seguro<br>
-                <em class="text-[var(--primary-lt)] not-italic">este hongo?</em>
-            </h1>
-
-            <p class="anim-fade-up delay-2 text-lg md:text-xl text-[var(--muted)] leading-relaxed max-w-lg">
-                Sube una fotografía clara y nuestro modelo de visión artificial analizará su fisonomía para determinar si es comestible o venenoso.
+    <!-- ── SAFETY ALERT BANNER ─────────────────────── -->
+    <div class="anim-fade-up mb-10 safety-alert rounded-2xl border border-amber-500/40 bg-amber-950/30 p-5 flex gap-4 items-start"
+         role="alert" aria-live="polite">
+        <div class="shrink-0 mt-0.5 w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-amber-400 font-black text-xs uppercase tracking-widest mb-1.5">Alerta de Seguridad — Uso Informativo y Educativo</p>
+            <p class="text-amber-100/80 text-sm leading-relaxed">
+                Los hongos mostrados o identificados <strong class="text-amber-300">NO deben ser manipulados ni consumidos bajo ninguna circunstancia.</strong>
+                Los modelos de IA no tienen una precisión del 100% y pueden cometer errores. Esta herramienta es <strong class="text-amber-300">puramente informativa y educativa.</strong>
+                Consulta siempre a un micólogo certificado antes de cualquier contacto con especímenes silvestres.
             </p>
+        </div>
+    </div>
 
-            <div class="anim-fade-up delay-3 flex flex-wrap gap-4">
-                <div class="glass px-5 py-3 rounded-2xl border border-[var(--border)] text-center">
-                    <p class="text-2xl font-black text-[var(--primary-lt)]">30+</p>
-                    <p class="text-[11px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Especies</p>
-                </div>
-                <div class="glass px-5 py-3 rounded-2xl border border-[var(--border)] text-center">
-                    <p class="text-2xl font-black text-[var(--primary-lt)]">~2s</p>
-                    <p class="text-[11px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Análisis</p>
-                </div>
-                <div class="glass px-5 py-3 rounded-2xl border border-[var(--border)] text-center">
-                    <p class="text-2xl font-black text-[var(--primary-lt)]">AI</p>
-                    <p class="text-[11px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Powered</p>
+    <!-- ── MAIN HERO: CAROUSEL + UPLOADER ──────────── -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start mb-24">
+
+        <!-- LEFT: Dynamic Image Carousel -->
+        <div class="anim-fade-up delay-1 flex flex-col gap-6">
+
+            <!-- Carousel -->
+            <div id="fungi-carousel" class="relative w-full rounded-[2.5rem] overflow-hidden border border-[var(--border)] bg-black aspect-[4/3] shadow-[0_32px_80px_rgba(0,0,0,.55)]">
+                <!-- slides injected by JS -->
+                <!-- Progress dots -->
+                <div id="carousel-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
+                <!-- Slide label overlay -->
+                <div id="carousel-label" class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-10 pointer-events-none">
+                    <p id="carousel-name" class="font-display font-bold text-xl text-white"></p>
+                    <p id="carousel-sci" class="text-xs italic text-white/60 mt-0.5"></p>
                 </div>
             </div>
 
-            <!-- Warning -->
-            <div class="anim-fade-up delay-4 glass border border-red-500/30 rounded-2xl p-5 flex gap-4 items-start bg-red-950/20">
-                <div class="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center shrink-0 text-xl">⚠️</div>
-                <div>
-                    <p class="text-red-400 font-bold text-xs uppercase tracking-widest mb-1">Advertencia</p>
-                    <p class="text-sm text-red-200/80 leading-relaxed">
-                        FungiScan es experimental. <strong>NUNCA</strong> consumas un espécimen basándote únicamente en este resultado. La identificación errónea puede ser letal.
-                    </p>
+            <!-- Hero copy below carousel -->
+            <div class="space-y-5">
+                <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-[var(--primary)] border border-[var(--border)]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse"></span>
+                    Motor de visión artificial activo
+                </div>
+                <h1 class="font-display text-5xl md:text-6xl font-black leading-[1.05] text-balance">
+                    ¿Es seguro<br>
+                    <em class="text-[var(--primary-lt)] not-italic">este hongo?</em>
+                </h1>
+                <p class="text-base md:text-lg text-[var(--muted)] leading-relaxed max-w-md">
+                    Sube una fotografía clara y nuestro modelo de visión artificial analizará su fisonomía para determinar si es comestible o venenoso.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
+                        <p class="text-xl font-black text-[var(--primary-lt)]">30+</p>
+                        <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Especies</p>
+                    </div>
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
+                        <p class="text-xl font-black text-[var(--primary-lt)]">~2s</p>
+                        <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Análisis</p>
+                    </div>
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
+                        <p class="text-xl font-black text-[var(--primary-lt)]">AI</p>
+                        <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Powered</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right: Scanner Card -->
+        <!-- RIGHT: Scanner Card (compact) -->
         <div class="anim-scale-in delay-2">
-            <div class="card p-4 relative overflow-hidden min-h-[580px] flex flex-col shadow-[0_32px_80px_rgba(0,0,0,.6)]">
+            <div class="card p-4 relative overflow-hidden flex flex-col shadow-[0_32px_80px_rgba(0,0,0,.6)]">
 
                 <!-- Card header -->
                 <div class="flex items-center justify-between px-3 py-2 mb-3">
@@ -354,35 +435,48 @@
                     </div>
                 </div>
 
-                <!-- Upload zone -->
+                <!-- Compact upload zone -->
                 <div id="upload-zone"
-                     class="flex-grow border-2 border-dashed border-[var(--border)] rounded-[2rem] flex flex-col items-center justify-center cursor-pointer p-8 text-center m-1 gap-5">
-                    <div class="w-20 h-20 rounded-2xl bg-[var(--primary)]/10 flex items-center justify-center anim-float">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                     class="border-2 border-dashed border-[var(--border)] rounded-[2rem] flex flex-col items-center justify-center cursor-pointer p-6 text-center m-1 gap-4 relative"
+                     style="min-height: 220px;">
+                    <div class="w-14 h-14 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center anim-float">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                         </svg>
                     </div>
                     <div>
-                        <p class="text-xl font-bold text-[var(--text)] mb-1">Arrastra o haz clic</p>
-                        <p class="text-sm text-[var(--muted)]">JPG, PNG, WEBP — hasta 10 MB</p>
+                        <p class="text-base font-bold text-[var(--text)] mb-0.5">Arrastra o haz clic</p>
+                        <p class="text-xs text-[var(--muted)]">JPG, PNG, WEBP — hasta 10 MB</p>
                     </div>
                     <input type="file" id="file-input" class="hidden" accept="image/*">
+
+                    <!-- Loading overlay on compact zone -->
+                    <div id="loading-zone-compact" class="rounded-[2rem]">
+                        <div class="spinner-sm"></div>
+                        <div class="text-center">
+                            <p class="text-[var(--primary)] font-mono text-xs tracking-[.2em] uppercase animate-pulse">Analizando muestra</p>
+                            <p class="text-[var(--muted)] text-[11px] mt-0.5">Procesando en Google Colab…</p>
+                        </div>
+                        <div class="w-36 h-1 rounded-full bg-white/5 overflow-hidden">
+                            <div class="h-full rounded-full bg-[var(--primary)] shimmer w-full"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Preview zone -->
-                <div id="preview-zone" class="hidden flex-grow flex flex-col gap-3 m-1">
-                    <div class="relative flex-grow rounded-[1.8rem] overflow-hidden border border-[var(--border)] bg-black/40 min-h-[380px]">
+                <div id="preview-zone" class="hidden flex flex-col gap-3 m-1 mt-2">
+                    <div class="relative rounded-[1.8rem] overflow-hidden border border-[var(--border)] bg-black/40" style="height: 260px;">
                         <img id="image-preview" src="" alt="Vista previa del espécimen" class="w-full h-full object-contain">
                         <button id="btn-cancel"
-                                class="absolute top-4 right-4 w-10 h-10 bg-red-500/90 hover:bg-red-400 text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg text-sm font-bold">✕</button>
+                                class="absolute top-4 right-4 w-9 h-9 bg-red-500/90 hover:bg-red-400 text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg text-sm font-bold">✕</button>
                     </div>
                     <button id="btn-analyze"
-                            class="btn-primary w-full py-5 text-lg font-black tracking-wide shadow-[0_0_40px_rgba(90,176,88,.25)]">
+                            class="btn-primary w-full py-4 text-base font-black tracking-wide shadow-[0_0_40px_rgba(90,176,88,.25)]">
                         Iniciar Análisis
                     </button>
                 </div>
 
-                <!-- Loading zone -->
+                <!-- Loading zone (full overlay fallback — kept for compatibility) -->
                 <div id="loading-zone"
                      class="hidden absolute inset-0 rounded-[2.4rem] glass flex flex-col items-center justify-center gap-6 z-10 bg-black/75">
                     <div class="spinner dot-pulse"></div>
@@ -622,6 +716,60 @@ const FUNGI_DATA = [
     }
 ];
 
+/* ─── CAROUSEL ────────────────────────────────────── */
+const CAROUSEL_IMGS = FUNGI_DATA.map(f => ({ img: f.img, name: f.name, sci: f.sci }));
+let carouselIndex = 0;
+let carouselTimer = null;
+
+function buildCarousel() {
+    const wrap = document.getElementById('fungi-carousel');
+    const dotsWrap = document.getElementById('carousel-dots');
+
+    CAROUSEL_IMGS.forEach((item, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide' + (i === 0 ? ' active' : '');
+        slide.style.backgroundImage = `url('${item.img}')`;
+        slide.style.backgroundSize = 'cover';
+        slide.style.backgroundPosition = 'center';
+        wrap.insertBefore(slide, document.getElementById('carousel-dots'));
+
+        const dot = document.createElement('button');
+        dot.className = `w-2 h-2 rounded-full border border-white/40 transition-all ${i === 0 ? 'bg-white scale-125' : 'bg-white/30'}`;
+        dot.setAttribute('aria-label', `Slide ${i + 1}`);
+        dot.addEventListener('click', () => goToSlide(i));
+        dotsWrap.appendChild(dot);
+    });
+    updateCarouselLabel();
+}
+
+function goToSlide(index) {
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots   = document.querySelectorAll('#carousel-dots button');
+    slides[carouselIndex].classList.remove('active');
+    dots[carouselIndex].classList.remove('bg-white', 'scale-125');
+    dots[carouselIndex].classList.add('bg-white/30');
+    carouselIndex = index;
+    slides[carouselIndex].classList.add('active');
+    dots[carouselIndex].classList.add('bg-white', 'scale-125');
+    dots[carouselIndex].classList.remove('bg-white/30');
+    updateCarouselLabel();
+    resetCarouselTimer();
+}
+
+function nextSlide() {
+    goToSlide((carouselIndex + 1) % CAROUSEL_IMGS.length);
+}
+
+function updateCarouselLabel() {
+    document.getElementById('carousel-name').textContent = CAROUSEL_IMGS[carouselIndex].name;
+    document.getElementById('carousel-sci').textContent  = CAROUSEL_IMGS[carouselIndex].sci;
+}
+
+function resetCarouselTimer() {
+    clearInterval(carouselTimer);
+    carouselTimer = setInterval(nextSlide, 4000);
+}
+
 /* ─── RENDER GALLERY ──────────────────────────────── */
 function renderGallery() {
     const grid = document.getElementById('fungi-grid');
@@ -809,6 +957,7 @@ function resetApp() {
     elFileInput.value = '';
     document.getElementById('preview-zone').classList.add('hidden');
     document.getElementById('result-zone').classList.add('hidden');
+    document.getElementById('loading-zone-compact').classList.remove('visible');
     document.getElementById('upload-zone').classList.remove('hidden');
     // reset bar
     document.getElementById('result-bar').style.width = '0';
@@ -816,8 +965,10 @@ function resetApp() {
 
 /* ─── ANALYSIS ────────────────────────────────────── */
 document.getElementById('btn-analyze').addEventListener('click', async () => {
-    show('loading-zone');
     hide('preview-zone');
+    // Show compact loading overlay on the upload zone
+    document.getElementById('upload-zone').classList.remove('hidden');
+    document.getElementById('loading-zone-compact').classList.add('visible');
 
     const formData = new FormData();
     formData.append('file', currentFile);
@@ -829,6 +980,7 @@ document.getElementById('btn-analyze').addEventListener('click', async () => {
             body: formData
         });
         const data = await response.json();
+        document.getElementById('loading-zone-compact').classList.remove('visible');
         showResult(data);
 
         if (userProfile.isPro) {
@@ -842,7 +994,8 @@ document.getElementById('btn-analyze').addEventListener('click', async () => {
             localStorage.setItem('fungiHistory', JSON.stringify(analysisHistory));
         }
     } catch (error) {
-        hide('loading-zone');
+        document.getElementById('loading-zone-compact').classList.remove('visible');
+        hide('upload-zone');
         show('preview-zone');
         showToast('Error de conexión con el servidor', true);
     }
@@ -916,6 +1069,8 @@ function hide(id) { document.getElementById(id).classList.add('hidden'); }
 /* ─── INIT ────────────────────────────────────────── */
 updateAccountUI();
 renderGallery();
+buildCarousel();
+resetCarouselTimer();
 switchView('lab');
 </script>
 </body>
