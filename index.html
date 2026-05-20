@@ -377,6 +377,21 @@
                         <p class="text-[11px] text-[var(--muted)]">Plan Gratuito · Se renueva en 24 h</p>
                     </div>
                 </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
+                        <p class="text-xl font-black text-[var(--primary-lt)]">30+</p>
+                        <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Especies</p>
+                    </div>
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
+                        <p class="text-xl font-black text-[var(--primary-lt)]">~2s</p>
+                        <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Análisis</p>
+                    </div>
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
+                        <p class="text-xl font-black text-[var(--primary-lt)]">AI</p>
+                        <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Powered</p>
+                    </div>
+                </div>
             </div>
 
             <!-- RIGHT: Scanner Card -->
@@ -955,6 +970,16 @@ const FUNGI_DATA = [
     { id:8, name:"Morchella esculenta",sci:"Morchella esculenta", type:"COMESTIBLE", habitat:"Bosques y praderas en primavera",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Morchella_esculenta_-_Linnaeus.jpg/640px-Morchella_esculenta_-_Linnaeus.jpg",                       desc:"La morilla. Aspecto alveolado inconfundible. Debe cocinarse antes de consumir ya que cruda contiene hemolisinas." }
 ];
 
+/* ─── HERO CAROUSEL IMAGES (local paths) ───────────── */
+const CAROUSEL_IMAGES = [
+    '/images/carousel/hongo1.jpg',
+    '/images/carousel/hongo2.jpg',
+    '/images/carousel/hongo3.jpg',
+    '/images/carousel/hongo4.jpg',
+    '/images/carousel/hongo5.jpg',
+    '/images/carousel/hongo6.jpg'
+];
+
 /* ─── HERO CAROUSEL (pure visual, no labels) ─────── */
 let heroIndex = 0;
 let heroTimer  = null;
@@ -963,15 +988,15 @@ function buildHeroCarousel() {
     const wrap     = document.getElementById('hero-carousel');
     const dotsWrap = document.getElementById('hero-dots');
 
-    FUNGI_DATA.forEach((item, i) => {
+    CAROUSEL_IMAGES.forEach((imgSrc, i) => {
         const slide = document.createElement('div');
         slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
         const img = document.createElement('img');
-        img.src   = item.img;
+        img.src   = imgSrc;
         img.alt   = '';   // purely decorative
         img.setAttribute('aria-hidden', 'true');
         img.className = 'w-full h-full object-cover';
-        img.loading = 'lazy';
+        img.loading = i === 0 ? 'eager' : 'lazy';  // first image loads immediately
         slide.appendChild(img);
         wrap.insertBefore(slide, dotsWrap);
 
@@ -998,7 +1023,7 @@ function goToHeroSlide(index) {
 
 function resetHeroTimer() {
     clearInterval(heroTimer);
-    heroTimer = setInterval(() => goToHeroSlide((heroIndex + 1) % FUNGI_DATA.length), 4500);
+    heroTimer = setInterval(() => goToHeroSlide((heroIndex + 1) % CAROUSEL_IMAGES.length), 4500);
 }
 
 /* ─── NAVIGATION ──────────────────────────────────── */
