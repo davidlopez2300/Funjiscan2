@@ -297,14 +297,14 @@
      TICKER BAND
 ══════════════════════════════════════════ -->
 <div class="fixed top-[68px] w-full z-40 border-b border-[var(--border)] bg-[var(--bg)]/60 backdrop-blur-sm py-2 ticker-wrap">
-    <div class="ticker-inner text-[12px] font-mono text-[var(--muted)] uppercase tracking-[.18em] select-none">
+    <div class="ticker-inner text-[11px] font-mono text-[var(--muted)] uppercase tracking-[.18em] select-none">
         <span class="mr-10">✦ Identificación micológica asistida por IA</span>
-        <span class="mr-10 text-[#D9A441]">✦ No consumir sin verificación de expertos</span>
-        <span class="mr-10 text-[#D9A441]">✦ No manipular sin verificacion de expertos</span>
+        <span class="mr-10">✦ No consumir sin verificación de expertos</span>
+        <span class="mr-10">✦ No manipular sin verificacion de expertos</span>
         <span class="mr-10">✦ Conectado a Google Colab</span>
         <span class="mr-10">✦ Identificación micológica asistida por IA</span>
-        <span class="mr-10 text-[#D9A441]">✦ No consumir sin verificación de expertos</span>
-        <span class="mr-10 text-[#D9A441]">✦ No manipular sin verificacion de expertos</span>
+        <span class="mr-10">✦ No consumir sin verificación de expertos</span>
+        <span class="mr-10">✦ No manipular sin verificacion de expertos</span>
         <span class="mr-10">✦ Conectado a Google Colab</span>
     </div>
 </div>
@@ -421,16 +421,17 @@
                 </div>
 
                 <div class="flex flex-wrap gap-3">
-                   <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
-                        <p class="text-xl font-black text-[var(--primary-lt)]">~5s</p>
-                        <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Análisis</p>
-                    </div>
                     <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
-                        <p class="text-xl font-black text-[var(--primary-lt)]">AI</p>
-                        <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Powered</p>
+                        <p class="text-2xl font-black text-[var(--primary-lt)]">~5s</p>
+                        <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-0.5">Análisis</p>
                     </div>
-                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
-                        <p class="text-
+                    <div class="text-center">
+                        <p class="text-2xl font-black text-[var(--primary-lt)]">AI</p>
+                        <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-0.5">Powered</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- RIGHT: Scanner Card -->
             <div class="anim-scale-in delay-2">
                 <div class="card p-4 relative overflow-hidden flex flex-col shadow-[0_32px_80px_rgba(0,0,0,.6)]">
@@ -438,22 +439,6 @@
                     <!-- Card header -->
                     <div class="flex items-center justify-between px-3 py-2 mb-3">
                         <p class="text-sm font-bold uppercase tracking-widest text-[var(--muted)]">Módulo de análisis</p>
-                        <div class="flex gap-1.5">
-                            <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-[var(--primary)]/60"></div>
-                        </div>
-                    </div>xl font-black text-[var(--primary-lt)]">Canvas</p>
-                        <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest mt-0.5">Model</p>
-                    </div>
-                </div>
-<!-- RIGHT: Scanner Card -->
-            <div class="anim-scale-in delay-2">
-                <div class="card p-4 relative overflow-hidden flex flex-col shadow-[0_32px_80px_rgba(0,0,0,.6)]">
-
-                    <!-- Card header -->
-                    <div class="flex items-center justify-between px-3 py-2 mb-3">
-                        <p class="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">Módulo de análisis</p>
                         <div class="flex gap-1.5">
                             <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
                             <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
@@ -1232,13 +1217,12 @@ const FUNGI_DATA = [
 
 /* ─── HERO CAROUSEL (pure visual, no labels) ─────── */
 const HERO_IMGS = [
-    'https://i.postimg.cc/SN2nFcr5/hongo1-waifu2x-art-noise3-scale.png',
-    'https://i.postimg.cc/yYgD40Pp/hongo2-waifu2x-art-noise3-scale.png',
-    'https://i.postimg.cc/2jX1K04M/hongo3-waifu2x-art-noise3-scale.png',
-    'https://i.postimg.cc/ryYDPfSN/hongo4-waifu2x-art-noise3-scale.png',
-    'https://i.postimg.cc/QNnFyfpY/hongo5-waifu2x-art-noise3-scale.png',
-    'https://i.postimg.cc/WpfdH5MW/hongo6-waifu2x-art-noise3-scale.png'
-
+    'https://i.postimg.cc/3xrxxw6K/hongo1.jpg',
+    'https://i.postimg.cc/bwYwwvMf/hongo2.jpg',
+    'https://i.postimg.cc/7ZPZZLcD/hongo3.jpg',
+    'https://i.postimg.cc/dVQVV0fb/hongo4.jpg',
+    'https://i.postimg.cc/bwYwwvMj/hongo5.jpg',
+    'https://i.postimg.cc/bwYwwv5V/hongo6.jpg'
 ];
 let heroIndex = 0;
 let heroTimer  = null;
