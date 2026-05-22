@@ -290,55 +290,207 @@
         <div id="mobile-counter" class="md:hidden text-xs font-mono text-[var(--muted)]">
             <span id="scans-left-mobile"></span>
         </div>
+    </div>
+</nav>
 
-        <!-- Countdown Timer (visible cuando se usa al menos 1 análisis) -->
-        <div id="countdown-timer" class="hidden mt-10 anim-fade-up">
-            <div class="card p-8 md:p-10 border-amber-500/30 bg-gradient-to-br from-amber-950/20 to-transparent">
-                <!-- Header -->
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<!-- ══════════════════════════════════════
+     TICKER BAND
+══════════════════════════════════════════ -->
+<div class="fixed top-[68px] w-full z-40 border-b border-[var(--border)] bg-[var(--bg)]/60 backdrop-blur-sm py-2 ticker-wrap">
+    <div class="ticker-inner text-[11px] font-mono text-[var(--muted)] uppercase tracking-[.18em] select-none">
+        <span class="mr-10">✦ Identificación micológica asistida por IA</span>
+        <span class="mr-10">✦ No consumir sin verificación de expertos</span>
+        <span class="mr-10">✦ No manipular sin verificacion de expertos</span>
+        <span class="mr-10">✦ Conectado a Google Colab</span>
+        <span class="mr-10">✦ Identificación micológica asistida por IA</span>
+        <span class="mr-10">✦ No consumir sin verificación de expertos</span>
+        <span class="mr-10">✦ No manipular sin verificacion de expertos</span>
+        <span class="mr-10">✦ Conectado a Google Colab</span>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     VIEW — LABORATORIO
+══════════════════════════════════════════ -->
+<main id="view-lab" class="view active w-full">
+
+    <!-- ── HERO CAROUSEL (full-width, pure visual) ─── -->
+    <div id="hero-carousel" class="relative w-full overflow-hidden bg-black" style="height:100svh; min-height:720px;">
+        <!-- slides injected by JS — pure images, no labels -->
+        <div id="hero-dots" class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-20"></div>
+
+        <!-- Scroll-down cue -->
+        <div class="absolute bottom-10 right-10 z-20 flex flex-col items-center gap-1.5 opacity-60">
+            <p class="text-[20px] font-mono uppercase tracking-widest text-white">Desplazar</p>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="anim-float"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+    </div>
+
+    <!-- ── SAFETY ALERT ───────────────────────────── -->
+    <div class="w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-12 pb-0">
+        <div class="safety-alert rounded-2xl border border-amber-500/40 bg-amber-950/30 p-5 flex gap-4 items-start"
+             role="alert" aria-live="polite">
+            <div class="shrink-0 mt-0.5 w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-amber-400 font-black text-sm uppercase tracking-widest mb-1.5">Alerta de Seguridad — Uso Informativo y Educativo</p>
+                <p class="text-amber-100/80 text-base leading-relaxed">
+                    Los hongos mostrados o identificados <strong class="text-amber-300">NO deben ser manipulados ni consumidos bajo ninguna circunstancia.</strong>
+                    Los modelos de IA no tienen una precisión del 100% y pueden cometer errores. Esta herramienta es <strong class="text-amber-300">puramente informativa y educativa.</strong>
+                    Consulta siempre a un micólogo certificado antes de cualquier contacto con especímenes silvestres.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── ANALYSIS MODULE ────────────────────────── -->
+    <div class="w-full max-w-[88rem] mx-auto px-5 md:px-10 pt-12 pb-28">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+
+            <!-- LEFT: Copy + scan counter -->
+            <div class="anim-fade-up space-y-7">
+                <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-sm font-bold uppercase tracking-widest text-[var(--primary)] border border-[var(--border)]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse"></span>
+                    Motor de visión artificial activo
+                </div>
+
+                <h1 class="font-display text-5xl md:text-7xl lg:text-[5.5rem] font-black leading-[1.05] text-balance">
+                    ¿Es seguro<br>
+                    <em class="text-[var(--primary-lt)] not-italic">este hongo?</em>
+                </h1>
+
+                <p class="text-lg md:text-xl text-[var(--muted)] leading-relaxed max-w-md">
+                    Sube una fotografía clara y nuestro modelo de visión artificial analizará su fisonomía para determinar si es comestible o venenoso.
+                </p>
+
+                <!-- Free scan counter chip -->
+                <div id="scan-counter-wrap" class="inline-flex items-center gap-3 glass px-5 py-3.5 rounded-2xl border border-[var(--border)]">
+                    <div class="flex gap-1.5">
+                        <div id="dot-0" class="w-3 h-3 rounded-full bg-[var(--primary)]"></div>
+                        <div id="dot-1" class="w-3 h-3 rounded-full bg-[var(--primary)]"></div>
+                        <div id="dot-2" class="w-3 h-3 rounded-full bg-[var(--primary)]"></div>
+                    </div>
+                    <div>
+                        <p id="scans-left-text" class="text-base font-bold text-[var(--text)]">3 análisis disponibles hoy</p>
+                        <p class="text-xs text-[var(--muted)]">Plan Gratuito · Se renueva en 24 h</p>
+                    </div>
+                </div>
+
+                <!-- Countdown Timer (visible cuando se agotan los usos) -->
+                <div id="countdown-timer" class="hidden glass rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 max-w-sm">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                             </svg>
                         </div>
                         <div>
-                            <p class="text-lg font-black uppercase tracking-widest text-amber-400">Restablecimiento de análisis</p>
-                            <p class="text-sm text-[var(--muted)]">Tus 3 análisis gratuitos se renovarán automáticamente</p>
+                <p class="text-sm font-black uppercase tracking-widest text-amber-400">Restablecimiento en</p>
+                <p class="text-xs text-[var(--muted)]">Tus 3 análisis se renovarán automáticamente</p>
                         </div>
                     </div>
-                    <button onclick="switchView('planes')" class="btn-primary px-6 py-3 text-sm font-bold bg-amber-500 hover:bg-amber-400 text-black">
-                        Obtener Pro — Ilimitado
+                    <!-- Countdown display -->
+                    <div class="flex items-center justify-center gap-2 mb-3">
+                        <div class="glass rounded-xl px-3 py-2 border border-amber-500/20 text-center min-w-[56px]">
+                            <p id="countdown-hours" class="text-2xl font-black text-amber-400 font-mono">00</p>
+                            <p class="text-[9px] text-[var(--muted)] uppercase tracking-widest">Horas</p>
+                        </div>
+                        <span class="text-xl font-bold text-amber-500/50">:</span>
+                        <div class="glass rounded-xl px-3 py-2 border border-amber-500/20 text-center min-w-[56px]">
+                            <p id="countdown-minutes" class="text-2xl font-black text-amber-400 font-mono">00</p>
+                            <p class="text-[9px] text-[var(--muted)] uppercase tracking-widest">Min</p>
+                        </div>
+                        <span class="text-xl font-bold text-amber-500/50">:</span>
+                        <div class="glass rounded-xl px-3 py-2 border border-amber-500/20 text-center min-w-[56px]">
+                            <p id="countdown-seconds" class="text-2xl font-black text-amber-400 font-mono">00</p>
+                            <p class="text-[9px] text-[var(--muted)] uppercase tracking-widest">Seg</p>
+                        </div>
+                    </div>
+                    <!-- Progress bar -->
+                    <div class="h-1.5 w-full bg-[var(--surface)] rounded-full overflow-hidden">
+                        <div id="countdown-progress" class="h-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-1000 ease-linear" style="width: 0%"></div>
+                    </div>
+                    <!-- Quick upgrade CTA -->
+                    <button onclick="switchView('plans')" class="mt-3 w-full text-sm text-center text-amber-400 hover:text-amber-300 transition-colors">
+                        <span class="underline underline-offset-2">Actualiza a Pro</span> para análisis ilimitados
                     </button>
                 </div>
-                
-                <!-- Countdown display -->
-                <div class="flex items-center justify-center gap-4 md:gap-6 mb-8">
-                    <div class="glass rounded-2xl px-6 py-5 border border-amber-500/25 text-center min-w-[100px] md:min-w-[120px]">
-                        <p id="countdown-hours" class="text-5xl md:text-6xl font-black text-amber-400 font-mono leading-none">00</p>
-                        <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-2">Horas</p>
+
+                <div class="flex flex-wrap gap-3">
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
+                        <p class="text-2xl font-black text-[var(--primary-lt)]">~5s</p>
+                        <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-0.5">Análisis</p>
                     </div>
-                    <span class="text-4xl font-bold text-amber-500/40">:</span>
-                    <div class="glass rounded-2xl px-6 py-5 border border-amber-500/25 text-center min-w-[100px] md:min-w-[120px]">
-                        <p id="countdown-minutes" class="text-5xl md:text-6xl font-black text-amber-400 font-mono leading-none">00</p>
-                        <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-2">Minutos</p>
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
+                        <p class="text-2xl font-black text-[var(--primary-lt)]">IA</p>
+                        <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-0.5">Powered</p>
                     </div>
-                    <span class="text-4xl font-bold text-amber-500/40">:</span>
-                    <div class="glass rounded-2xl px-6 py-5 border border-amber-500/25 text-center min-w-[100px] md:min-w-[120px]">
-                        <p id="countdown-seconds" class="text-5xl md:text-6xl font-black text-amber-400 font-mono leading-none">00</p>
-                        <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-2">Segundos</p>
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary)]/5 transition-all active:scale-95" onclick="openCanvasModal()" title="Ver arquitectura del modelo">
+                        <p class="text-2xl font-black text-[var(--primary-lt)]">Canvas</p>
+                        <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-0.5">Model</p>
                     </div>
                 </div>
-                
-                <!-- Progress bar -->
-                <div class="h-3 w-full bg-[var(--surface)] rounded-full overflow-hidden">
-                    <div id="countdown-progress" class="h-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-1000 ease-linear rounded-full" style="width: 0%"></div>
+            </div>
+
+            <!-- RIGHT: Scanner Card -->
+            <div class="anim-scale-in delay-2">
+                <div class="card p-4 relative overflow-hidden flex flex-col shadow-[0_32px_80px_rgba(0,0,0,.6)]">
+
+                    <!-- Card header -->
+                    <div class="flex items-center justify-between px-3 py-2 mb-3">
+                        <p class="text-sm font-bold uppercase tracking-widest text-[var(--muted)]">Módulo de análisis</p>
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-[var(--border)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-[var(--primary)]/60"></div>
+                        </div>
+                    </div>
+
+                    <!-- Upload zone -->
+                    <div id="upload-zone"
+                         class="border-2 border-dashed border-[var(--border)] rounded-[2rem] flex flex-col items-center justify-center cursor-pointer p-6 text-center m-1 gap-4 relative"
+                         style="min-height:220px;">
+                        <div class="w-14 h-14 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center anim-float">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <div>
+                <p class="text-base font-bold text-[var(--text)] mb-0.5">Arrastra o haz clic</p>
+                <p class="text-sm text-[var(--muted)]">JPG, PNG, WEBP — hasta 10 MB</p>
+                        </div>
+                        <input type="file" id="file-input" class="hidden" accept="image/*">
+
+                        <!-- Compact loading overlay -->
+                        <div id="loading-zone-compact" class="rounded-[2rem]">
+                            <div class="spinner-sm"></div>
+                            <div class="text-center">
+                <p class="text-[var(--primary)] font-mono text-sm tracking-[.2em] uppercase animate-pulse">Analizando muestra</p>
+                <p class="text-[var(--muted)] text-xs mt-0.5">Procesando en Google Colab…</p>
+                            </div>
+                            <div class="w-36 h-1 rounded-full bg-white/5 overflow-hidden">
+                                <div class="h-full rounded-full bg-[var(--primary)] shimmer w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview zone -->
+                    <div id="preview-zone" class="hidden flex-col gap-3 m-1 mt-2">
+                        <div class="relative rounded-[1.8rem] overflow-hidden border border-[var(--border)] bg-black/40" style="height:260px;">
+                            <img id="image-preview" src="" alt="Vista previa del espécimen" class="w-full h-full object-contain">
+                            <button id="btn-cancel"
+                                    class="absolute top-4 right-4 w-9 h-9 bg-red-500/90 hover:bg-red-400 text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg text-sm font-bold">✕</button>
+                        </div>
+                        <button id="btn-analyze"
+                                class="btn-primary w-full py-4 text-lg font-black tracking-wide shadow-[0_0_40px_rgba(90,176,88,.25)]">
+                            Iniciar Análisis
+                        </button>
+                    </div>
                 </div>
-                
-                <!-- Info text -->
-                <p class="text-center text-sm text-[var(--muted)] mt-4">
-                    El contador se reinicia automáticamente cada 24 horas desde tu primer análisis del día
-                </p>
             </div>
         </div>
     </div>
@@ -1007,17 +1159,12 @@ function updateScanCounter() {
   const remaining = getRemainingScans();
   const data = getUsageData();
   
-  // Mostrar countdown cuando se ha usado al menos 1 análisis (remaining < 3)
-  if (remaining < 3 && data.resetAt > Date.now()) {
+  // Si no quedan usos, mostrar countdown
+  if (remaining === 0 && data.resetAt > Date.now()) {
       showCountdownTimer(data.resetAt);
-  } else {
-      hideCountdownTimer();
-  }
-  
-  // Actualizar texto del contador
-  if (remaining === 0) {
       document.getElementById('scans-left-text').textContent = 'Límite diario alcanzado';
   } else {
+      hideCountdownTimer();
       const text = `${remaining} análisis disponible${remaining !== 1 ? 's' : ''} hoy`;
       document.getElementById('scans-left-text').textContent = text;
   }
