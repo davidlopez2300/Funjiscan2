@@ -919,6 +919,63 @@
     </div>
 </div>
 
+<!-- MODAL: Auth Required para adquirir Plan Pro (invitados) -->
+<div id="modal-auth-required" class="modal-overlay">
+    <div class="modal-box card p-0 overflow-hidden w-full max-w-[440px] shadow-[0_32px_80px_rgba(0,0,0,.85)]">
+        <div class="h-1 w-full bg-[var(--primary)]"></div>
+        <div class="p-8 text-center space-y-6">
+            <!-- Icono -->
+            <div class="w-20 h-20 rounded-2xl bg-[var(--primary)]/10 border border-[var(--primary)]/25 flex items-center justify-center mx-auto">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+            <!-- Textos -->
+            <div>
+                <p class="text-xs font-mono uppercase tracking-widest text-[var(--primary)] mb-2">Cuenta requerida</p>
+                <h3 class="font-display text-2xl font-black mb-3 text-balance leading-tight">Inicia sesión para obtener Pro</h3>
+                <p class="text-[var(--muted)] text-sm leading-relaxed">
+                    Para adquirir el Plan Pro necesitas tener una cuenta activa.
+                    Regístrate gratis o inicia sesión para continuar.
+                </p>
+            </div>
+            <!-- Mini comparison -->
+            <div class="glass rounded-2xl p-4 border border-[var(--primary)]/40 bg-[var(--primary)]/5 text-left">
+                <p class="text-xs font-black uppercase tracking-widest text-[var(--primary)] mb-2">Plan Pro incluye</p>
+                <ul class="text-sm text-[var(--muted)] space-y-1.5">
+                    <li class="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Análisis ilimitados
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Historial completo
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Mayor velocidad
+                    </li>
+                </ul>
+            </div>
+            <!-- Botones de accion -->
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeAuthRequiredModal('register')"
+                    class="btn-primary py-4 text-sm font-black shadow-[0_0_32px_rgba(90,176,88,.25)]">
+                    Registrarse
+                </button>
+                <button onclick="closeAuthRequiredModal('login')"
+                    class="btn-ghost py-4 text-sm font-semibold">
+                    Iniciar Sesión
+                </button>
+            </div>
+            <button onclick="closeAuthRequiredModal()"
+                class="text-xs text-[var(--muted)] hover:text-[var(--text)] transition-colors">
+                Ahora no
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- ══════════════════════════════════════
      SCRIPT
 ══════════════════════════════════════════ -->
@@ -1223,6 +1280,13 @@ function toggleUserType() {
 }
 
 function activatePro() {
+    // Verificar si el usuario está logueado antes de permitir activar Pro
+    if (!isLoggedIn) {
+        // Mostrar modal de invitación a iniciar sesión/registrarse
+        openAuthRequiredModal();
+        return;
+    }
+    
     userProfile.isPro = true;
     persistAccountState(); // Guardar estado PRO en localStorage
     // Desbloquear uploader inmediatamente
@@ -1232,9 +1296,34 @@ function activatePro() {
         zone.title = '';
     }
     updateScanCounter();
-    if (isLoggedIn) updateAccountUI();
+    updateAccountUI();
     showToast('Plan Pro activado. Analisis ilimitados.');
     switchView('lab');
+}
+
+/* ─── MODAL: Auth Required para activar Pro ──────────── */
+function openAuthRequiredModal() {
+    document.getElementById('modal-auth-required').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAuthRequiredModal(tab) {
+    document.getElementById('modal-auth-required').classList.remove('open');
+    document.body.style.overflow = '';
+    if (tab) {
+        // Cambiar a la vista Mi Cuenta
+        switchView('account');
+        // Activar el tab correspondiente (login o register)
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                switchAuthTab(tab);
+                const authSection = document.getElementById('view-account');
+                if (authSection) {
+                    authSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 80);
+        });
+    }
 }
 
 function saveProfile() {
@@ -1580,6 +1669,11 @@ document.addEventListener('keydown', e => {
     closeResultModal();
     closeGalleryModal();
     closePaywallModal();
+    // Cerrar modal de auth required
+    const authModal = document.getElementById('modal-auth-required');
+    if (authModal && authModal.classList.contains('open')) {
+        closeAuthRequiredModal();
+    }
 });
 
 /* ─── API STATUS ──────────────────────────────────── */
