@@ -146,7 +146,7 @@
         .ticker-wrap  { overflow:hidden; }
         .ticker-inner { display:flex; width:max-content; animation:ticker 28s linear infinite; }
 
-        /* ─── SPINNER ─────────────────────────────── */
+        /* ─── SPINNER ────────���────────────────────── */
         .spinner {
             width:48px; height:48px;
             border:3px solid rgba(90,176,88,.2);
@@ -376,6 +376,46 @@
                         <p id="scans-left-text" class="text-sm font-bold text-[var(--text)]">3 análisis disponibles hoy</p>
                         <p class="text-[11px] text-[var(--muted)]">Plan Gratuito · Se renueva en 24 h</p>
                     </div>
+                </div>
+
+                <!-- Countdown Timer (visible cuando se agotan los usos) -->
+                <div id="countdown-timer" class="hidden glass rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 max-w-sm">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-black uppercase tracking-widest text-amber-400">Restablecimiento en</p>
+                            <p class="text-[10px] text-[var(--muted)]">Tus 3 análisis se renovarán automáticamente</p>
+                        </div>
+                    </div>
+                    <!-- Countdown display -->
+                    <div class="flex items-center justify-center gap-2 mb-3">
+                        <div class="glass rounded-xl px-3 py-2 border border-amber-500/20 text-center min-w-[56px]">
+                            <p id="countdown-hours" class="text-2xl font-black text-amber-400 font-mono">00</p>
+                            <p class="text-[9px] text-[var(--muted)] uppercase tracking-widest">Horas</p>
+                        </div>
+                        <span class="text-xl font-bold text-amber-500/50">:</span>
+                        <div class="glass rounded-xl px-3 py-2 border border-amber-500/20 text-center min-w-[56px]">
+                            <p id="countdown-minutes" class="text-2xl font-black text-amber-400 font-mono">00</p>
+                            <p class="text-[9px] text-[var(--muted)] uppercase tracking-widest">Min</p>
+                        </div>
+                        <span class="text-xl font-bold text-amber-500/50">:</span>
+                        <div class="glass rounded-xl px-3 py-2 border border-amber-500/20 text-center min-w-[56px]">
+                            <p id="countdown-seconds" class="text-2xl font-black text-amber-400 font-mono">00</p>
+                            <p class="text-[9px] text-[var(--muted)] uppercase tracking-widest">Seg</p>
+                        </div>
+                    </div>
+                    <!-- Progress bar -->
+                    <div class="h-1.5 w-full bg-[var(--surface)] rounded-full overflow-hidden">
+                        <div id="countdown-progress" class="h-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-1000 ease-linear" style="width: 0%"></div>
+                    </div>
+                    <!-- Quick upgrade CTA -->
+                    <button onclick="switchView('plans')" class="mt-3 w-full text-xs text-center text-amber-400 hover:text-amber-300 transition-colors">
+                        <span class="underline underline-offset-2">Actualiza a Pro</span> para análisis ilimitados
+                    </button>
                 </div>
 
                 <div class="flex flex-wrap gap-3">
@@ -1055,6 +1095,7 @@ function updateScanCounter() {
   const zone = document.getElementById('upload-zone');
   if (userProfile.isPro) {
       document.getElementById('scan-counter-wrap').style.display = 'none';
+      hideCountdownTimer();
       // Desbloquear uploader de forma reactiva
       if (zone) {
           zone.classList.remove('locked');
@@ -1064,10 +1105,17 @@ function updateScanCounter() {
   }
   document.getElementById('scan-counter-wrap').style.display = '';
   const remaining = getRemainingScans();
-  const text = remaining === 0
-      ? 'Límite diario alcanzado'
-      : `${remaining} análisis disponible${remaining !== 1 ? 's' : ''} hoy`;
-  document.getElementById('scans-left-text').textContent = text;
+  const data = getUsageData();
+  
+  // Si no quedan usos, mostrar countdown
+  if (remaining === 0 && data.resetAt > Date.now()) {
+      showCountdownTimer(data.resetAt);
+      document.getElementById('scans-left-text').textContent = 'Límite diario alcanzado';
+  } else {
+      hideCountdownTimer();
+      const text = `${remaining} análisis disponible${remaining !== 1 ? 's' : ''} hoy`;
+      document.getElementById('scans-left-text').textContent = text;
+  }
 
   // Actualiza los 3 puntos
   for (let i = 0; i < 3; i++) {
@@ -1088,14 +1136,70 @@ function updateScanCounter() {
   }
 }
 
+/* ─── COUNTDOWN TIMER (24h) ─────────────────────────── */
+let countdownInterval = null;
+
+function showCountdownTimer(resetAt) {
+    const container = document.getElementById('countdown-timer');
+    if (!container) return;
+    
+    container.classList.remove('hidden');
+    
+    // Limpiar intervalo anterior si existe
+    if (countdownInterval) clearInterval(countdownInterval);
+    
+    function updateCountdown() {
+        const now = Date.now();
+        const diff = resetAt - now;
+        
+        if (diff <= 0) {
+            // Tiempo agotado, restablecer usos
+            hideCountdownTimer();
+            updateScanCounter();
+            return;
+        }
+        
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        document.getElementById('countdown-hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('countdown-minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('countdown-seconds').textContent = String(seconds).padStart(2, '0');
+        
+        // Calcular progreso (0 a 1)
+        const totalTime = 24 * 60 * 60 * 1000; // 24 horas en ms
+        const elapsed = totalTime - diff;
+        const progress = Math.min(1, elapsed / totalTime);
+        const progressBar = document.getElementById('countdown-progress');
+        if (progressBar) {
+            progressBar.style.width = `${progress * 100}%`;
+        }
+    }
+    
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+}
+
+function hideCountdownTimer() {
+    const container = document.getElementById('countdown-timer');
+    if (container) container.classList.add('hidden');
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+}
+
 function resetDemo() {
     // Reiniciar contador del usuario actual (logueado o invitado)
     const key = isLoggedIn ? getUserStorageKey('scanUsage') : GUEST_USAGE_KEY;
     localStorage.removeItem(key);
     // Tambien reiniciar contador de invitados siempre
     localStorage.removeItem(GUEST_USAGE_KEY);
+    // Ocultar countdown si está visible
+    hideCountdownTimer();
     updateScanCounter();
-    showToast('Demo reiniciada — 3 analisis disponibles');
+    showToast('Demo reiniciada — 3 análisis disponibles');
 }
 
 /* ─── FUNGI DATA ──────────────────────────────────── */
