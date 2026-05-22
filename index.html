@@ -429,7 +429,7 @@
                         <p class="text-2xl font-black text-[var(--primary-lt)]">IA</p>
                         <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-0.5">Powered</p>
                     </div>
-                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center">
+                    <div class="glass px-4 py-2.5 rounded-2xl border border-[var(--border)] text-center cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary)]/5 transition-all active:scale-95" onclick="openCanvasModal()" title="Ver arquitectura del modelo">
                         <p class="text-2xl font-black text-[var(--primary-lt)]">Canvas</p>
                         <p class="text-xs text-[var(--muted)] uppercase tracking-widest mt-0.5">Model</p>
                     </div>
@@ -1018,6 +1018,56 @@
                 Ahora no
             </button>
         </div>
+    </div>
+</div>
+
+<!-- MODAL: Canvas Model (Fullscreen Image) -->
+<div id="modal-canvas" class="modal-overlay">
+    <div class="relative w-full h-full flex items-center justify-center p-4 md:p-8">
+        <!-- Close button -->
+        <button onclick="closeCanvasModal()" 
+            class="absolute top-6 right-6 z-10 w-12 h-12 rounded-full glass border border-white/20 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/40 transition-all active:scale-95"
+            aria-label="Cerrar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        
+        <!-- Image container -->
+        <div class="modal-box relative max-w-7xl w-full max-h-[90vh] rounded-3xl overflow-hidden shadow-[0_0_120px_rgba(90,176,88,.15)] border border-[var(--primary)]/30">
+            <!-- Header -->
+            <div class="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 via-black/40 to-transparent p-6 pointer-events-none">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[var(--primary)]/20 border border-[var(--primary)]/40 flex items-center justify-center">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-mono uppercase tracking-widest text-[var(--primary)]">Arquitectura</p>
+                        <h3 class="text-xl font-bold text-white">Canvas Model</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Image -->
+            <img 
+                src="https://i.postimg.cc/sDqSx74H/canvass-waifu2x-art-noise3-scale.png" 
+                alt="Canvas Model - Arquitectura del modelo de IA"
+                class="w-full h-full object-contain bg-[#0a0f0a]"
+                style="max-height: 90vh;"
+            />
+            
+            <!-- Footer gradient -->
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 pointer-events-none">
+                <p class="text-sm text-white/60 text-center">
+                    Diagrama de la arquitectura del modelo de visión artificial utilizado para la identificación micológica
+                </p>
+            </div>
+        </div>
+        
+        <!-- Click outside to close -->
+        <div class="absolute inset-0 -z-10" onclick="closeCanvasModal()"></div>
     </div>
 </div>
 
@@ -1773,12 +1823,24 @@ function closeGuestLimitModal(tab) {
     });
 }
 
+/* ─── CANVAS MODEL MODAL ─────────────────────────────── */
+function openCanvasModal() {
+    document.getElementById('modal-canvas').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCanvasModal() {
+    document.getElementById('modal-canvas').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
 /* ─── KEYBOARD CLOSE ──────────────────────────────── */
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     closeResultModal();
     closeGalleryModal();
     closePaywallModal();
+    closeCanvasModal();
     // Cerrar modal de auth required
     const authModal = document.getElementById('modal-auth-required');
     if (authModal && authModal.classList.contains('open')) {
