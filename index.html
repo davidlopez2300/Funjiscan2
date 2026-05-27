@@ -1904,7 +1904,7 @@ function openHistoryDetailModal(item) {
     document.getElementById('hist-detail-date').textContent = item.date || '';
 
     const badge = document.getElementById('hist-detail-badge');
-    badge.textContent = isPoison ? '⚠ Venenoso' : '✓ Comestible';
+    badge.textContent = isPoison ? '⚠ Venenoso' : '✓ Posiblemente Seguro';
     badge.style.cssText = `background:${isPoison ? 'rgba(224,85,85,.85)' : 'rgba(90,176,88,.85)'}; color:${isPoison ? '#fff' : '#071209'};`;
 
     document.getElementById('modal-history-detail').classList.add('open');
