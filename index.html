@@ -739,7 +739,17 @@
                         <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-0.5">Registro personal</p>
                         <h2 class="text-xl font-bold">Historial de Análisis</h2>
                     </div>
-                    <span id="history-pro-badge" class="hidden text-[11px] bg-[var(--primary)] text-black px-3 py-1 rounded-full font-black uppercase tracking-widest">Pro Activo</span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="renderHistory()" title="Actualizar historial"
+                            class="text-[11px] glass px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all flex items-center gap-1.5">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                            </svg>
+                            Actualizar
+                        </button>
+                        <span id="history-pro-badge" class="hidden text-[11px] bg-[var(--primary)] text-black px-3 py-1 rounded-full font-black uppercase tracking-widest">Pro Activo</span>
+                    </div>
                 </div>
 
                 <!-- PRO: history list -->
@@ -1114,6 +1124,41 @@ function restoreAccountState() {
     }
 }
 
+/* ─── PERSISTENCIA DE SESIÓN (sobrevive al refresh) ── */
+const SESSION_KEY = 'fungi_active_session';
+
+function saveSession() {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+        name:  userProfile.name,
+        email: userProfile.email,
+        isPro: userProfile.isPro
+    }));
+}
+
+function clearSession() {
+    localStorage.removeItem(SESSION_KEY);
+}
+
+function restoreSession() {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return;
+    try {
+        const saved = JSON.parse(raw);
+        if (!saved.email) return;
+        userProfile.name  = saved.name;
+        userProfile.email = saved.email;
+        isLoggedIn = true;
+        // Restaurar estado PRO desde clave por usuario (fuente de verdad)
+        restoreAccountState();
+        // Restaurar historial
+        analysisHistory = JSON.parse(localStorage.getItem(getUserStorageKey('history')) || '[]');
+        showDashboard();
+        updateScanCounter();
+    } catch (e) {
+        clearSession();
+    }
+}
+
 /* ─── FREE PLAN LIMITER (vinculado por usuario) ──── */
 const FREE_LIMIT = 3;
 const GUEST_USAGE_KEY = 'fungi_guest_scanUsage';
@@ -1376,6 +1421,8 @@ function handleLogin() {
     restoreAccountState();
     // Restaurar historial del usuario
     analysisHistory = JSON.parse(localStorage.getItem(getUserStorageKey('history')) || '[]');
+    // Persistir sesión para que sobreviva un refresh
+    saveSession();
     showDashboard();
     updateScanCounter();
     showToast('Bienvenido, ' + userProfile.name);
@@ -1392,6 +1439,8 @@ function handleRegister() {
     isLoggedIn = true;
     // Guardar estado inicial FREE
     persistAccountState();
+    // Persistir sesión para que sobreviva un refresh
+    saveSession();
     // Historial vacío para cuenta nueva
     analysisHistory = [];
     showDashboard();
@@ -1406,6 +1455,8 @@ function handleLogout() {
     userProfile.email = '';
     userProfile.name  = 'Usuario UIS';
     analysisHistory = [];
+    // Borrar sesión guardada — solo se cierra al pulsar "Salir"
+    clearSession();
     document.getElementById('auth-wall').classList.remove('hidden');
     const dash = document.getElementById('account-dashboard');
     dash.classList.add('hidden');
@@ -1676,6 +1727,8 @@ document.getElementById('btn-analyze').addEventListener('click', async () => {
             // Guardar historial vinculado al usuario
             const histKey = isLoggedIn ? getUserStorageKey('history') : 'fungiHistory';
             localStorage.setItem(histKey, JSON.stringify(analysisHistory));
+            // Actualizar el panel de historial en tiempo real (sin recargar la página)
+            renderHistory();
         }
 
         resetApp();
@@ -1897,6 +1950,7 @@ function showToast(msg, isError = false) {
 buildHeroCarousel();
 resetHeroTimer();
 updateScanCounter();
+restoreSession();   // ← restaura sesión si el usuario ya estaba logueado
 switchView('lab');
 </script>
 </body>
