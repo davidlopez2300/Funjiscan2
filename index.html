@@ -1870,7 +1870,7 @@ function openHistoryDetailModal(item) {
     document.getElementById('hist-detail-date').textContent = item.date || '';
 
     const badge = document.getElementById('hist-detail-badge');
-    badge.textContent = isPoison ? '⚠ Venenoso' : '✓ Comestible';
+    badge.textContent = isPoison ? '⚠ Venenoso' : '✓ ';
     badge.style.cssText = `background:${isPoison ? 'rgba(224,85,85,.85)' : 'rgba(90,176,88,.85)'}; color:${isPoison ? '#fff' : '#071209'};`;
 
     document.getElementById('modal-history-detail').classList.add('open');
@@ -1901,9 +1901,9 @@ function openGalleryModal(f) {
         tag.textContent = 'Venenoso';
         tag.className   = 'glass px-3 py-1.5 rounded-full text-xs font-bold border border-red-500/30 text-red-400';
     } else {
-        badge.textContent = 'Comestible';
+        badge.textContent = 'Seguro';
         badge.className = 'absolute bottom-4 left-4 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-[var(--primary)]/90 text-black';
-        tag.textContent = 'Comestible';
+        tag.textContent = 'Seguro';
         tag.className   = 'glass px-3 py-1.5 rounded-full text-xs font-bold border border-[var(--border)] text-[var(--primary-lt)]';
     }
 
