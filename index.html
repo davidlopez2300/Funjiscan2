@@ -1088,6 +1088,40 @@
 <!-- ══════════════════════════════════════
      SCRIPT
 ══════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     MODAL — HISTORY DETAIL
+══════════════════════════════════════════ -->
+<div id="modal-history-detail" class="modal-overlay" onclick="closeHistoryDetailModal(event)">
+    <div class="modal-box card p-0 overflow-hidden w-full max-w-[400px] shadow-[0_32px_80px_rgba(0,0,0,.75)]">
+
+        <!-- Top colored band -->
+        <div id="hist-detail-band" class="h-2 w-full"></div>
+
+        <!-- Close -->
+        <button onclick="closeHistoryDetailModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/8 border border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)] hover:bg-white/14 transition-all flex items-center justify-center text-sm font-bold z-10">✕</button>
+
+        <!-- Image -->
+        <div class="relative w-full aspect-square bg-black overflow-hidden">
+            <img id="hist-detail-img" src="" alt="" class="w-full h-full object-cover">
+            <!-- Verdict badge over image -->
+            <div id="hist-detail-badge" class="absolute bottom-4 left-4 px-4 py-2 rounded-full text-sm font-black uppercase tracking-widest"></div>
+        </div>
+
+        <!-- Info -->
+        <div class="p-6 space-y-3">
+            <div>
+                <p class="text-xs font-mono uppercase tracking-widest text-[var(--muted)] mb-1">Especie identificada</p>
+                <h3 id="hist-detail-name" class="font-display italic text-2xl font-bold"></h3>
+            </div>
+            <div class="flex items-center justify-between glass rounded-2xl px-5 py-3.5 border border-[var(--border)]">
+                <span class="text-xs font-mono uppercase tracking-widest text-[var(--muted)]">Confianza del modelo</span>
+                <span id="hist-detail-conf" class="text-sm font-black font-mono"></span>
+            </div>
+            <p id="hist-detail-date" class="text-xs text-[var(--muted)] font-mono text-right"></p>
+        </div>
+    </div>
+</div>
+
 <script>
 /* ─── CONFIG ──────────────────────────────────────── */
 const NGROK_URL = "https://blitz-casing-catalog.ngrok-free.dev";
@@ -1601,7 +1635,8 @@ function renderHistory() {
     [...analysisHistory].reverse().forEach(item => {
         const isPoison = item.type === 'VENENOSO';
         const card = document.createElement('div');
-        card.className = 'hist-card flex items-center gap-4 p-4';
+        card.className = 'hist-card flex items-center gap-4 p-4 cursor-pointer';
+        card.onclick   = () => openHistoryDetailModal(item);
         card.innerHTML = `
             <div class="w-10 h-10 rounded-xl overflow-hidden shrink-0 border ${isPoison ? 'border-red-500/30' : 'border-[var(--primary)]/30'}">
                 ${item.img
@@ -1820,6 +1855,34 @@ function closeResultModal(e) {
     document.body.style.overflow = '';
 }
 
+/* ─── HISTORY DETAIL MODAL ────────────────────────── */
+function openHistoryDetailModal(item) {
+    const isPoison = item.type === 'VENENOSO';
+    const color    = isPoison ? '#e05555' : '#5ab058';
+
+    document.getElementById('hist-detail-band').style.background = color;
+    document.getElementById('hist-detail-img').src  = item.img || '';
+    document.getElementById('hist-detail-img').alt  = item.name;
+    document.getElementById('hist-detail-name').textContent = item.name;
+    document.getElementById('hist-detail-name').style.color = color;
+    document.getElementById('hist-detail-conf').textContent = `${Math.round((item.conf || 0) * 100)}%`;
+    document.getElementById('hist-detail-conf').style.color = color;
+    document.getElementById('hist-detail-date').textContent = item.date || '';
+
+    const badge = document.getElementById('hist-detail-badge');
+    badge.textContent = isPoison ? '⚠ Venenoso' : '✓ Comestible';
+    badge.style.cssText = `background:${isPoison ? 'rgba(224,85,85,.85)' : 'rgba(90,176,88,.85)'}; color:${isPoison ? '#fff' : '#071209'};`;
+
+    document.getElementById('modal-history-detail').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeHistoryDetailModal(e) {
+    if (e && e.target !== document.getElementById('modal-history-detail')) return;
+    document.getElementById('modal-history-detail').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
 /* ─── GALLERY MODAL ───────────────────────────────── */
 function openGalleryModal(f) {
     const isPoison = f.type === 'VENENOSO';
@@ -1931,6 +1994,7 @@ document.addEventListener('keydown', e => {
     closeGalleryModal();
     closePaywallModal();
     closeCanvasModal();
+    closeHistoryDetailModal();
     // Cerrar modal de auth required
     const authModal = document.getElementById('modal-auth-required');
     if (authModal && authModal.classList.contains('open')) {
